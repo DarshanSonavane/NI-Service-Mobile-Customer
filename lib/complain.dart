@@ -73,10 +73,10 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
                   itemCount: _isLoading ? 1 : dataComplainList?.length,
                   itemBuilder: (BuildContext context, int index) {
                     if (_isLoading) {
-                      return const SizedBox
-                          .shrink(); // Return an empty widget while loading
+                      return const SizedBox.shrink();
                     }
-                    final complaint = dataComplainList![index];
+                    final reversedIndex = dataComplainList!.length - index - 1;
+                    final complaint = dataComplainList![reversedIndex];
                     return Card(
                       elevation: 10,
                       margin: const EdgeInsets.all(8.0),

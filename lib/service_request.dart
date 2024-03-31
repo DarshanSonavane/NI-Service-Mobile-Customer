@@ -25,12 +25,14 @@ class _ServiceRequestState extends State<ServiceRequest> {
   bool _isLoading = false;
   final sharedPreferences = SharedPreferencesManager.instance;
   List<DataComplaintsList>? dataComplainList;
+  bool isComplaintOpen = false;
 
   @override
   void initState() {
     selectedRadioListTile = "Petrol";
     super.initState();
-    getComplaintList();
+    _fetchComplaints();
+    //getComplaintList();
   }
 
   setSelectedRadioTile(String val) {
@@ -151,29 +153,102 @@ class _ServiceRequestState extends State<ServiceRequest> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (selectedComplaint.toString().isNotEmpty) {
-                        _fetchComplaints();
-                        // createServiceRequestAPI();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text("Please Select above Options")));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                  isComplaintOpen
+                      ? ElevatedButton(
+                          onPressed: null, // Button is disabled
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade400,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40.0, vertical: 16.0),
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                  fontSize: 18.0, color: Colors.white),
+                            ),
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            if (selectedComplaint.toString().isNotEmpty) {
+                              createServiceRequestAPI();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("Please Select above Options")),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40.0, vertical: 16.0),
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                  fontSize: 18.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                  /*Visibility(
+                    visible: isComplaintOpen,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (selectedComplaint
+                            .toString()
+                            .isNotEmpty) {
+                          createServiceRequestAPI();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                  Text("Please Select above Options")));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 40.0, vertical: 16.0),
+                        // Adjust padding
+                        child: Text(
+                          'Submit',
+                          style:
+                          TextStyle(fontSize: 18.0, color: Colors.white),
+                        ), // Adjust font size
                       ),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 40.0, vertical: 16.0),
-                      // Adjust padding
-                      child: Text('Submit',
-                          style: TextStyle(fontSize: 18.0,color: Colors.white)), // Adjust font size
+                  ),*/
+                  SizedBox(height: 30),
+                  Visibility(
+                    visible: isComplaintOpen,
+                    child: const Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 18.0),
+                        child: Text(
+                          "Note :- You can not raise new complaint until your existing"
+                          " complaint is closed or feedback is provided",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -240,6 +315,10 @@ class _ServiceRequestState extends State<ServiceRequest> {
               ),
               onPressed: () {
                 // Perform action on Done button press
+                _fetchComplaints();
+                setState(() {
+                  selectedComplaint = null; // Reset dropdown to default value
+                });
                 Navigator.of(context).pop(); // Close the alert
               },
               color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
@@ -259,7 +338,12 @@ class _ServiceRequestState extends State<ServiceRequest> {
               ),
               onPressed: () {
                 // Perform action on Done button press
-                Navigator.of(context).pop(); // Close the alert
+                _fetchComplaints();
+                setState(() {
+                  selectedComplaint = null; // Reset dropdown to default value
+                });
+                Navigator.of(context).pop();
+                // Close the alert
               },
               color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
             ),
@@ -282,7 +366,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     setState(() {
       _isLoading = true;
     });
-    bool isComplaintOpen = false;
+
     String? customerId = sharedPreferences?.getString("CustomerId");
     final responseGetServiceRequestList = await fetchComplaints(customerId!);
     if (responseGetServiceRequestList.code == "200" &&
@@ -290,21 +374,19 @@ class _ServiceRequestState extends State<ServiceRequest> {
       dataComplainList = responseGetServiceRequestList.data;
       if (dataComplainList != null && dataComplainList!.isNotEmpty) {
         for (int i = 0; i < dataComplainList!.length; i++) {
-          if(dataComplainList![i].ratings == null){
+          if (dataComplainList![i].ratings == null) {
             isComplaintOpen = true;
             break;
           }
         }
 
-        if(isComplaintOpen){
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("You can not raise new complaint until your"
-                  " existing complaint is closed or feedback is provided")));
-        }else{
-          createServiceRequestAPI();
+        if (isComplaintOpen) {
+          setState(() {});
+        } else {
+          getComplaintList();
         }
-      }else{
-        createServiceRequestAPI();
+      } else {
+        getComplaintList();
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

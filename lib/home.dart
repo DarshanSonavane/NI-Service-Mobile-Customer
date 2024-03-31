@@ -79,11 +79,11 @@ class _HomeState extends State<Home> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10.0),
                             child: Align(
-                              alignment: Alignment.topRight,
+                              alignment: Alignment.center,
                               child: Text(
                                 countOfVisit(),
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.deepPurpleAccent,
                                 ),
