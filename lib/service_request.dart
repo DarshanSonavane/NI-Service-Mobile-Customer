@@ -173,7 +173,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
                           horizontal: 40.0, vertical: 16.0),
                       // Adjust padding
                       child: Text('Submit',
-                          style: TextStyle(fontSize: 18.0)), // Adjust font size
+                          style: TextStyle(fontSize: 18.0,color: Colors.white)), // Adjust font size
                     ),
                   ),
                 ],
@@ -290,7 +290,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
       dataComplainList = responseGetServiceRequestList.data;
       if (dataComplainList != null && dataComplainList!.isNotEmpty) {
         for (int i = 0; i < dataComplainList!.length; i++) {
-          if(dataComplainList![i].status == "1"){
+          if(dataComplainList![i].ratings == null){
             isComplaintOpen = true;
             break;
           }
@@ -298,7 +298,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
 
         if(isComplaintOpen){
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Your last Complaint is open, You can not raise a new Compalaint")));
+              const SnackBar(content: Text("You can not raise new complaint until your"
+                  " existing complaint is closed or feedback is provided")));
         }else{
           createServiceRequestAPI();
         }

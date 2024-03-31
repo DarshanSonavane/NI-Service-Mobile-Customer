@@ -209,9 +209,12 @@ class _HomeState extends State<Home> {
           context: currentContext,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return CustomDialogForMobileGSTAndEmail(
-              widget.customer_id!,
-              callback: setFlagForMobileAndEmail,
+            return PopScope(
+              canPop: false,
+              child: CustomDialogForMobileGSTAndEmail(
+                widget.customer_id!,
+                callback: setFlagForMobileAndEmail,
+              ),
             );
           },
         );

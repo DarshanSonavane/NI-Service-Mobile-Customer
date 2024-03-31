@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ni_service/model/RequestSetPassword.dart';
+
+import 'http_service/services.dart';
+import 'model/ResponseSetPassword.dart';
 
 class passwordSetModal extends StatefulWidget {
   const passwordSetModal({super.key});
@@ -11,8 +16,9 @@ class _PasswordSetModalState extends State<passwordSetModal> {
   final TextEditingController customCodeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
   var _passwordVisible, _confirmPasswordVisible;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -23,10 +29,10 @@ class _PasswordSetModalState extends State<passwordSetModal> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Row(
+      title: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Set Password'),
+          Text('Set Password'),
         ],
       ),
       content: SingleChildScrollView(
@@ -44,7 +50,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildStyledTextFieldPassword(
               controller: passwordController,
               labelText: 'Password*',
@@ -57,7 +63,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildStyledTextFieldPassword(
               controller: confirmPasswordController,
               labelText: 'Re-enter Password*',
@@ -70,11 +76,11 @@ class _PasswordSetModalState extends State<passwordSetModal> {
                 return null;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Text(
               "Note:-Password to have at least 8 characters, "
-              "at least one uppercase letter, at least one lowercase letter,"
-              " at least one digit, and at least one special character.",
+                  "at least one uppercase letter, at least one lowercase letter,"
+                  " at least one digit, and at least one special character.",
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 12,
@@ -90,18 +96,18 @@ class _PasswordSetModalState extends State<passwordSetModal> {
           onPressed: () {
             Navigator.of(context).pop();
           },
+          style: ButtonStyle(
+              backgroundColor:
+              MaterialStateColor.resolveWith((states) => Colors.red)),
           child: const Text(
             'Close',
             style: TextStyle(color: Colors.white),
           ),
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateColor.resolveWith((states) => Colors.red)),
         ),
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor:
-                MaterialStateColor.resolveWith((states) => Colors.green),
+            MaterialStateColor.resolveWith((states) => Colors.green),
           ),
           onPressed: () async {
             String etCustomercode = customCodeController.text;
@@ -135,49 +141,13 @@ class _PasswordSetModalState extends State<passwordSetModal> {
             }
 
             // All validations passed, proceed with your logic
-            print("SUCCESS");
+            setorResetPassword(context);
           },
           child: const Text(
             'Submit',
             style: TextStyle(color: Colors.white),
           ),
         ),
-
-        /*ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateColor.resolveWith((states) => Colors.green)),
-          onPressed: () async {
-            // You can access the entered values using the controllers:
-            String et_Customercode = customCodeController.text;
-            String et_Password = passwordController.text;
-            String et_ConfirmPassword = confirmPasswordController.text;
-            if (et_Customercode.isNotEmpty &&
-                et_Password.isNotEmpty &&
-                validatePassword(et_Password) &&
-                et_ConfirmPassword.isNotEmpty &&
-                isPasswordMatch(et_Password, et_ConfirmPassword)) {
-              print("SUCCESS");
-            } else {
-              if (et_Password.isNotEmpty && !validatePassword(et_Password)) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Please Enter Valid Password")));
-              } else if (et_ConfirmPassword.isNotEmpty &&
-                  !isPasswordMatch(et_Password, et_ConfirmPassword)) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content:
-                        Text("Confirm password and password should match")));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Please enter required Field")));
-              }
-            }
-          },
-          child: Text(
-            'Submit',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),*/
       ],
     );
   }
@@ -233,14 +203,16 @@ class _PasswordSetModalState extends State<passwordSetModal> {
             suffixIcon: IconButton(
               icon: Icon(
                   _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Theme.of(context).primaryColorDark),
+                  color: Theme
+                      .of(context)
+                      .primaryColorDark),
               onPressed: () {
                 setState(() {
                   togglePasswordVisibility(!passwordVisibleTest);
                 });
               },
             ) // Remove the default border
-            ),
+        ),
         validator: validator,
         keyboardType: TextInputType.text,
       ),
@@ -269,5 +241,42 @@ class _PasswordSetModalState extends State<passwordSetModal> {
     setState(() {
       _confirmPasswordVisible = visible;
     });
+  }
+
+  setorResetPassword(BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      if (customCodeController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty &&
+          confirmPasswordController.text.isNotEmpty) {
+        RequestSetPassword requestSetPassword = RequestSetPassword();
+        requestSetPassword.customerCode = customCodeController.text.toString();
+        requestSetPassword.password = passwordController.text.toString();
+        final scaffoldContext = context;
+        ResponseSetPassword res = await setPasswordAPI(requestSetPassword);
+        if (res.code == "200") {
+          String message = res.message ?? "Password set successfully";
+          ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(content: Text(message)));
+          Navigator.of(scaffoldContext).pop();
+        }
+
+      }
+
+
+      } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      if (kDebugMode) {
+        print("Hello");
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }

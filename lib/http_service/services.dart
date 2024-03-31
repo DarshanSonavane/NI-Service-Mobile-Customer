@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:ni_service/model/RequestCustomerDetailsModel.dart';
+import 'package:ni_service/model/RequestSetPassword.dart';
 import 'package:ni_service/model/ResponseCustomerDetailsModel.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/model/ResponseFeedback.dart';
+import 'package:ni_service/model/ResponseSetPassword.dart';
 import 'package:ni_service/model/requestCreateService.dart';
 import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/requestLogin.dart';
@@ -132,6 +134,24 @@ Future<ResponseCustomerDetails> CustomerDetailsAPI(
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseCustomerDetails.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseSetPassword> setPasswordAPI(
+    RequestSetPassword requestSetPassword) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/update-customer-password"),
+        body: jsonEncode(requestSetPassword),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseSetPassword.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }

@@ -128,6 +128,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
                                     // Adjust padding
                                     child: Text('Feedback',
                                         style: TextStyle(
+                                          color: Colors.white,
                                             fontSize:
                                                 18.0)), // Adjust font size
                                   ),

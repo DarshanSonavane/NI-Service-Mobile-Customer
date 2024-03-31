@@ -1,13 +1,13 @@
 class responseGetServiceRequestList {
-  String? message;
   String? code;
+  String? message;
   List<DataComplaintsList>? data;
 
-  responseGetServiceRequestList({this.message, this.code, this.data});
+  responseGetServiceRequestList({this.code, this.message, this.data});
 
   responseGetServiceRequestList.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
     code = json['code'];
+    message = json['message'];
     if (json['data'] != null) {
       data = <DataComplaintsList>[];
       json['data'].forEach((v) {
@@ -18,8 +18,8 @@ class responseGetServiceRequestList {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
     data['code'] = this.code;
+    data['message'] = this.message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -33,13 +33,13 @@ class DataComplaintsList {
   String? createdAt;
   CustomerId? customerId;
   ComplaintType? complaintType;
-  String? assignedTo;
+  Null? assignedTo;
   int? iV;
-  String? ratings;
-  String? employeeFeedback;
+  String? updatedBy;
+  Ratings? ratings;
+  Null? employeeFeedback;
   String? status;
   String? machineType;
-  String? updatedBy;
 
   DataComplaintsList(
       {this.sId,
@@ -49,11 +49,11 @@ class DataComplaintsList {
         this.complaintType,
         this.assignedTo,
         this.iV,
+        this.updatedBy,
         this.ratings,
         this.employeeFeedback,
         this.status,
-        this.machineType,
-        this.updatedBy});
+        this.machineType});
 
   DataComplaintsList.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -67,11 +67,12 @@ class DataComplaintsList {
         : null;
     assignedTo = json['assignedTo'];
     iV = json['__v'];
-    ratings = json['ratings'];
+    updatedBy = json['updatedBy'];
+    ratings =
+    json['ratings'] != null ? new Ratings.fromJson(json['ratings']) : null;
     employeeFeedback = json['employeeFeedback'];
     status = json['status'];
     machineType = json['machineType'];
-    updatedBy = json['updatedBy'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,17 +88,20 @@ class DataComplaintsList {
     }
     data['assignedTo'] = this.assignedTo;
     data['__v'] = this.iV;
-    data['ratings'] = this.ratings;
+    data['updatedBy'] = this.updatedBy;
+    if (this.ratings != null) {
+      data['ratings'] = this.ratings!.toJson();
+    }
     data['employeeFeedback'] = this.employeeFeedback;
     data['status'] = this.status;
     data['machineType'] = this.machineType;
-    data['updatedBy'] = this.updatedBy;
     return data;
   }
 }
 
 class CustomerId {
   String? sId;
+  String? password;
   String? gstNo;
   String? email;
   String? mobile;
@@ -108,6 +112,7 @@ class CustomerId {
 
   CustomerId(
       {this.sId,
+        this.password,
         this.gstNo,
         this.email,
         this.mobile,
@@ -118,6 +123,7 @@ class CustomerId {
 
   CustomerId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
+    password = json['password'];
     gstNo = json['gstNo'];
     email = json['email'];
     mobile = json['mobile'];
@@ -130,6 +136,7 @@ class CustomerId {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
+    data['password'] = this.password;
     data['gstNo'] = this.gstNo;
     data['email'] = this.email;
     data['mobile'] = this.mobile;
@@ -156,6 +163,51 @@ class ComplaintType {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['name'] = this.name;
+    return data;
+  }
+}
+
+class Ratings {
+  String? sId;
+  String? updatedAt;
+  String? createdAt;
+  String? serviceRequestId;
+  String? customerId;
+  int? iV;
+  String? count;
+  String? feedback;
+
+  Ratings(
+      {this.sId,
+        this.updatedAt,
+        this.createdAt,
+        this.serviceRequestId,
+        this.customerId,
+        this.iV,
+        this.count,
+        this.feedback});
+
+  Ratings.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    updatedAt = json['updatedAt'];
+    createdAt = json['createdAt'];
+    serviceRequestId = json['serviceRequestId'];
+    customerId = json['customerId'];
+    iV = json['__v'];
+    count = json['count'];
+    feedback = json['feedback'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['updatedAt'] = this.updatedAt;
+    data['createdAt'] = this.createdAt;
+    data['serviceRequestId'] = this.serviceRequestId;
+    data['customerId'] = this.customerId;
+    data['__v'] = this.iV;
+    data['count'] = this.count;
+    data['feedback'] = this.feedback;
     return data;
   }
 }
