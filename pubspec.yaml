@@ -4,7 +4,7 @@ description: A new Flutter project.
 publish_to: 'none'
 
 
-version: 4.0.1+5
+version: 4.0.0+8
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -20,6 +20,8 @@ dependencies:
   rflutter_alert: ^2.0.7
   intl: ^0.18.1
   fl_chart: ^0.41.0
+  in_app_update: ^4.2.2
+  url_launcher: ^6.2.5
 
 
 dev_dependencies:

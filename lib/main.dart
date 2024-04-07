@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:ni_service/splash.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 

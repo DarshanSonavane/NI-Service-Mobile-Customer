@@ -53,11 +53,20 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'niservice'
+            keyPassword 'niservice123'
+            storeFile file('/Users/abhisheksharma/Documents/Flutter_Directory/ni_service/niservice')
+            storePassword 'niservice123'
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }

@@ -42,7 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.lightGreen,
-          title: Text(widget.title),
+          title: Align(
+              alignment: Alignment.center,
+              child: Text(
+                widget.title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28.5),
+              )),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -109,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          passwordVisible = !passwordVisible; // Toggle password visibility
+                          passwordVisible =
+                              !passwordVisible; // Toggle password visibility
                         });
                       },
                     ),
@@ -228,8 +237,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         )));
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Something went wrong, please try after sometime")));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content:
+                  Text("Something went wrong, please try after sometime")));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -7,6 +7,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'http_service/services.dart';
 import 'model/requestCreateService.dart';
 import 'model/responseGetServiceRequestList.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ServiceRequest extends StatefulWidget {
   final String title;
@@ -295,6 +296,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     requestCreateServices.complaintType = complaintTypes;
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
+    // requestCreateServices.version = "4.0.1+5";
     try {
       setState(() {
         _isLoading = true;
@@ -331,24 +333,37 @@ class _ServiceRequestState extends State<ServiceRequest> {
           title: 'Service Request',
           desc: responseCreateService.message,
           buttons: [
-            DialogButton(
-              child: Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+            if (responseCreateService.message == 'abc')
+              DialogButton(
+                child: Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  // Perform action on Done button press
+                  _fetchComplaints();
+                  setState(() {
+                    selectedComplaint = null; // Reset dropdown to default value
+                  });
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
               ),
-              onPressed: () {
-                // Perform action on Done button press
-                _fetchComplaints();
-                setState(() {
-                  selectedComplaint = null; // Reset dropdown to default value
-                });
-                Navigator.of(context).pop();
-                // Close the alert
-              },
-              color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
-            ),
+            if (responseCreateService.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+              DialogButton(
+                child: Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  _launchPlayStore();
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: Colors.blue, // Button color
+              ),
           ],
         ).show();
+
       }
     } catch (e) {
       if (kDebugMode) {
@@ -361,6 +376,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
       });
     }
   }
+
 
   Future<void> _fetchComplaints() async {
     setState(() {
@@ -434,5 +450,17 @@ class _ServiceRequestState extends State<ServiceRequest> {
         });
       }
     });
+  }
+
+
+
+  void _launchPlayStore() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
