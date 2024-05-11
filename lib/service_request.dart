@@ -201,39 +201,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
                             ),
                           ),
                         ),
-                  /*Visibility(
-                    visible: isComplaintOpen,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (selectedComplaint
-                            .toString()
-                            .isNotEmpty) {
-                          createServiceRequestAPI();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                  Text("Please Select above Options")));
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 40.0, vertical: 16.0),
-                        // Adjust padding
-                        child: Text(
-                          'Submit',
-                          style:
-                          TextStyle(fontSize: 18.0, color: Colors.white),
-                        ), // Adjust font size
-                      ),
-                    ),
-                  ),*/
                   SizedBox(height: 30),
                   Visibility(
                     visible: isComplaintOpen,
@@ -296,7 +263,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     requestCreateServices.complaintType = complaintTypes;
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
-    // requestCreateServices.version = "4.0.1+5";
+    requestCreateServices.version = "4.0.0+10";
     try {
       setState(() {
         _isLoading = true;
@@ -333,18 +300,13 @@ class _ServiceRequestState extends State<ServiceRequest> {
           title: 'Service Request',
           desc: responseCreateService.message,
           buttons: [
-            if (responseCreateService.message == 'abc')
+            if (responseCreateService.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
               DialogButton(
                 child: Text(
                   'Done',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 onPressed: () {
-                  // Perform action on Done button press
-                  _fetchComplaints();
-                  setState(() {
-                    selectedComplaint = null; // Reset dropdown to default value
-                  });
                   Navigator.of(context).pop(); // Close the alert
                 },
                 color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
@@ -415,41 +377,47 @@ class _ServiceRequestState extends State<ServiceRequest> {
   }
 
   void showDropdownMenu() {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero),
-            ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    final List<PopupMenuEntry<dataComplainType>> items =
-        complaintDatas.map((dataComplainType complaint) {
-      return PopupMenuItem<dataComplainType>(
-        value: complaint,
-        child: Text(complaint.name!),
+    try{
+      final RenderBox button = context.findRenderObject() as RenderBox;
+      final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
+      final RelativeRect position = RelativeRect.fromRect(
+        Rect.fromPoints(
+          button.localToGlobal(Offset.zero, ancestor: overlay),
+          button.localToGlobal(button.size.bottomRight(Offset.zero),
+              ancestor: overlay),
+        ),
+        Offset.zero & overlay.size,
       );
-    }).toList();
 
-    showMenu<dataComplainType>(
-      context: context,
-      position: position,
-      items: items,
-    ).then((selectedValue) {
-      if (selectedValue != null) {
-        setState(() {
-          selectedComplaint = selectedValue;
-        });
-      } else {
-        setState(() {
-          selectedComplaint = null; // You can set it to any default value
-        });
+      final List<PopupMenuEntry<dataComplainType>> items =
+      complaintDatas.map((dataComplainType complaint) {
+        return PopupMenuItem<dataComplainType>(
+          value: complaint,
+          child: Text(complaint.name!),
+        );
+      }).toList();
+
+      showMenu<dataComplainType>(
+        context: context,
+        position: position,
+        items: items,
+      ).then((selectedValue) {
+        if (selectedValue != null) {
+          setState(() {
+            selectedComplaint = selectedValue;
+          });
+        } else {
+          setState(() {
+            selectedComplaint = null; // You can set it to any default value
+          });
+        }
+      });
+    }catch(e){
+      if (kDebugMode) {
+        print(e.toString());
       }
-    });
+    }
   }
 
 

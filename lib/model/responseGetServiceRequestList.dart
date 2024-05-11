@@ -33,27 +33,27 @@ class DataComplaintsList {
   String? createdAt;
   CustomerId? customerId;
   ComplaintType? complaintType;
-  Null? assignedTo;
+  String? assignedTo;
   int? iV;
   String? updatedBy;
   Ratings? ratings;
-  Null? employeeFeedback;
+  String? employeeFeedback;
   String? status;
   String? machineType;
 
   DataComplaintsList(
       {this.sId,
-        this.updatedAt,
-        this.createdAt,
-        this.customerId,
-        this.complaintType,
-        this.assignedTo,
-        this.iV,
-        this.updatedBy,
-        this.ratings,
-        this.employeeFeedback,
-        this.status,
-        this.machineType});
+      this.updatedAt,
+      this.createdAt,
+      this.customerId,
+      this.complaintType,
+      this.assignedTo,
+      this.iV,
+      this.updatedBy,
+      this.ratings,
+      this.employeeFeedback,
+      this.status,
+      this.machineType});
 
   DataComplaintsList.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -69,7 +69,7 @@ class DataComplaintsList {
     iV = json['__v'];
     updatedBy = json['updatedBy'];
     ratings =
-    json['ratings'] != null ? new Ratings.fromJson(json['ratings']) : null;
+        json['ratings'] != null ? new Ratings.fromJson(json['ratings']) : null;
     employeeFeedback = json['employeeFeedback'];
     status = json['status'];
     machineType = json['machineType'];
@@ -79,22 +79,22 @@ class DataComplaintsList {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['updatedAt'] = this.updatedAt;
-    data['createdAt'] = this.createdAt;
-    if (this.customerId != null) {
-      data['customerId'] = this.customerId!.toJson();
+    data['createdAt'] = createdAt;
+    if (customerId != null) {
+      data['customerId'] = customerId!.toJson();
     }
-    if (this.complaintType != null) {
-      data['complaintType'] = this.complaintType!.toJson();
+    if (complaintType != null) {
+      data['complaintType'] = complaintType!.toJson();
     }
-    data['assignedTo'] = this.assignedTo;
-    data['__v'] = this.iV;
-    data['updatedBy'] = this.updatedBy;
-    if (this.ratings != null) {
-      data['ratings'] = this.ratings!.toJson();
+    data['assignedTo'] = assignedTo;
+    data['__v'] = iV;
+    data['updatedBy'] = updatedBy;
+    if (ratings != null) {
+      data['ratings'] = ratings!.toJson();
     }
-    data['employeeFeedback'] = this.employeeFeedback;
-    data['status'] = this.status;
-    data['machineType'] = this.machineType;
+    data['employeeFeedback'] = employeeFeedback;
+    data['status'] = status;
+    data['machineType'] = machineType;
     return data;
   }
 }
@@ -112,14 +112,14 @@ class CustomerId {
 
   CustomerId(
       {this.sId,
-        this.password,
-        this.gstNo,
-        this.email,
-        this.mobile,
-        this.amcDue,
-        this.city,
-        this.customerName,
-        this.customerCode});
+      this.password,
+      this.gstNo,
+      this.email,
+      this.mobile,
+      this.amcDue,
+      this.city,
+      this.customerName,
+      this.customerCode});
 
   CustomerId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -179,13 +179,13 @@ class Ratings {
 
   Ratings(
       {this.sId,
-        this.updatedAt,
-        this.createdAt,
-        this.serviceRequestId,
-        this.customerId,
-        this.iV,
-        this.count,
-        this.feedback});
+      this.updatedAt,
+      this.createdAt,
+      this.serviceRequestId,
+      this.customerId,
+      this.iV,
+      this.count,
+      this.feedback});
 
   Ratings.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

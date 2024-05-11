@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
@@ -35,13 +34,11 @@ class _HomeState extends State<Home> {
   bool _isLoading = false;
   final sharedPreferences = SharedPreferencesManager.instance;
   bool emailMobileAvailable = false;
-  AppUpdateInfo? _updateInfo;
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
-  bool _flexibleUpdateAvailable = false;
+
 
   @override
   void initState() {
-    checkForUpdate();
+
     if (widget.email != null &&
         widget.email!.isNotEmpty &&
         widget.mobile != null &&
@@ -56,23 +53,7 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> checkForUpdate() async {
-    InAppUpdate.checkForUpdate().then((info) {
-      setState(() {
-        _updateInfo = info;
-      });
-    }).catchError((e) {
-      showSnack(e.toString());
-    });
-  }
 
-  void showSnack(String text) {
-    if (_scaffoldKey.currentContext != null) {
-      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
-          .showSnackBar(SnackBar(content: Text(text)));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
