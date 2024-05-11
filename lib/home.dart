@@ -35,8 +35,10 @@ class _HomeState extends State<Home> {
   final sharedPreferences = SharedPreferencesManager.instance;
   bool emailMobileAvailable = false;
 
+
   @override
   void initState() {
+
     if (widget.email != null &&
         widget.email!.isNotEmpty &&
         widget.mobile != null &&
@@ -50,6 +52,8 @@ class _HomeState extends State<Home> {
 
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +83,11 @@ class _HomeState extends State<Home> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10.0),
                             child: Align(
-                              alignment: Alignment.topRight,
+                              alignment: Alignment.center,
                               child: Text(
                                 countOfVisit(),
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.deepPurpleAccent,
                                 ),
@@ -209,9 +213,12 @@ class _HomeState extends State<Home> {
           context: currentContext,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return CustomDialogForMobileGSTAndEmail(
-              widget.customer_id!,
-              callback: setFlagForMobileAndEmail,
+            return PopScope(
+              canPop: false,
+              child: CustomDialogForMobileGSTAndEmail(
+                widget.customer_id!,
+                callback: setFlagForMobileAndEmail,
+              ),
             );
           },
         );
@@ -266,4 +273,6 @@ class _HomeState extends State<Home> {
       return "Total Visit :- $closedComplaints";
     }
   }
+
+
 }

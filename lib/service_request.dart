@@ -7,6 +7,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'http_service/services.dart';
 import 'model/requestCreateService.dart';
 import 'model/responseGetServiceRequestList.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ServiceRequest extends StatefulWidget {
   final String title;
@@ -25,12 +26,14 @@ class _ServiceRequestState extends State<ServiceRequest> {
   bool _isLoading = false;
   final sharedPreferences = SharedPreferencesManager.instance;
   List<DataComplaintsList>? dataComplainList;
+  bool isComplaintOpen = false;
 
   @override
   void initState() {
     selectedRadioListTile = "Petrol";
     super.initState();
-    getComplaintList();
+    _fetchComplaints();
+    //getComplaintList();
   }
 
   setSelectedRadioTile(String val) {
@@ -151,29 +154,69 @@ class _ServiceRequestState extends State<ServiceRequest> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (selectedComplaint.toString().isNotEmpty) {
-                        _fetchComplaints();
-                        // createServiceRequestAPI();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text("Please Select above Options")));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                  isComplaintOpen
+                      ? ElevatedButton(
+                          onPressed: null, // Button is disabled
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade400,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40.0, vertical: 16.0),
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                  fontSize: 18.0, color: Colors.white),
+                            ),
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            if (selectedComplaint.toString().isNotEmpty) {
+                              createServiceRequestAPI();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("Please Select above Options")),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40.0, vertical: 16.0),
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                  fontSize: 18.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                  SizedBox(height: 30),
+                  Visibility(
+                    visible: isComplaintOpen,
+                    child: const Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 18.0),
+                        child: Text(
+                          "Note :- You can not raise new complaint until your existing"
+                          " complaint is closed or feedback is provided",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 40.0, vertical: 16.0),
-                      // Adjust padding
-                      child: Text('Submit',
-                          style: TextStyle(fontSize: 18.0)), // Adjust font size
                     ),
                   ),
                 ],
@@ -220,6 +263,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     requestCreateServices.complaintType = complaintTypes;
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
+    requestCreateServices.version = "4.0.0+10";
     try {
       setState(() {
         _isLoading = true;
@@ -240,6 +284,10 @@ class _ServiceRequestState extends State<ServiceRequest> {
               ),
               onPressed: () {
                 // Perform action on Done button press
+                _fetchComplaints();
+                setState(() {
+                  selectedComplaint = null; // Reset dropdown to default value
+                });
                 Navigator.of(context).pop(); // Close the alert
               },
               color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
@@ -252,19 +300,32 @@ class _ServiceRequestState extends State<ServiceRequest> {
           title: 'Service Request',
           desc: responseCreateService.message,
           buttons: [
-            DialogButton(
-              child: Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+            if (responseCreateService.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+              DialogButton(
+                child: Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
               ),
-              onPressed: () {
-                // Perform action on Done button press
-                Navigator.of(context).pop(); // Close the alert
-              },
-              color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
-            ),
+            if (responseCreateService.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+              DialogButton(
+                child: Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  _launchPlayStore();
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: Colors.blue, // Button color
+              ),
           ],
         ).show();
+
       }
     } catch (e) {
       if (kDebugMode) {
@@ -278,11 +339,12 @@ class _ServiceRequestState extends State<ServiceRequest> {
     }
   }
 
+
   Future<void> _fetchComplaints() async {
     setState(() {
       _isLoading = true;
     });
-    bool isComplaintOpen = false;
+
     String? customerId = sharedPreferences?.getString("CustomerId");
     final responseGetServiceRequestList = await fetchComplaints(customerId!);
     if (responseGetServiceRequestList.code == "200" &&
@@ -290,20 +352,19 @@ class _ServiceRequestState extends State<ServiceRequest> {
       dataComplainList = responseGetServiceRequestList.data;
       if (dataComplainList != null && dataComplainList!.isNotEmpty) {
         for (int i = 0; i < dataComplainList!.length; i++) {
-          if(dataComplainList![i].status == "1"){
+          if (dataComplainList![i].ratings == null) {
             isComplaintOpen = true;
             break;
           }
         }
 
-        if(isComplaintOpen){
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Your last Complaint is open, You can not raise a new Compalaint")));
-        }else{
-          createServiceRequestAPI();
+        if (isComplaintOpen) {
+          setState(() {});
+        } else {
+          getComplaintList();
         }
-      }else{
-        createServiceRequestAPI();
+      } else {
+        getComplaintList();
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -316,40 +377,58 @@ class _ServiceRequestState extends State<ServiceRequest> {
   }
 
   void showDropdownMenu() {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero),
-            ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    final List<PopupMenuEntry<dataComplainType>> items =
-        complaintDatas.map((dataComplainType complaint) {
-      return PopupMenuItem<dataComplainType>(
-        value: complaint,
-        child: Text(complaint.name!),
+    try{
+      final RenderBox button = context.findRenderObject() as RenderBox;
+      final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
+      final RelativeRect position = RelativeRect.fromRect(
+        Rect.fromPoints(
+          button.localToGlobal(Offset.zero, ancestor: overlay),
+          button.localToGlobal(button.size.bottomRight(Offset.zero),
+              ancestor: overlay),
+        ),
+        Offset.zero & overlay.size,
       );
-    }).toList();
 
-    showMenu<dataComplainType>(
-      context: context,
-      position: position,
-      items: items,
-    ).then((selectedValue) {
-      if (selectedValue != null) {
-        setState(() {
-          selectedComplaint = selectedValue;
-        });
-      } else {
-        setState(() {
-          selectedComplaint = null; // You can set it to any default value
-        });
+      final List<PopupMenuEntry<dataComplainType>> items =
+      complaintDatas.map((dataComplainType complaint) {
+        return PopupMenuItem<dataComplainType>(
+          value: complaint,
+          child: Text(complaint.name!),
+        );
+      }).toList();
+
+      showMenu<dataComplainType>(
+        context: context,
+        position: position,
+        items: items,
+      ).then((selectedValue) {
+        if (selectedValue != null) {
+          setState(() {
+            selectedComplaint = selectedValue;
+          });
+        } else {
+          setState(() {
+            selectedComplaint = null; // You can set it to any default value
+          });
+        }
+      });
+    }catch(e){
+      if (kDebugMode) {
+        print(e.toString());
       }
-    });
+    }
+  }
+
+
+
+  void _launchPlayStore() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

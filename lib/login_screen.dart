@@ -21,9 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController customerCodeController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   BuildContext? _storedContext;
-  bool passwordVisible = false;
   final sharedPreferences = SharedPreferencesManager.instance;
   bool _isLoading = false;
+  bool passwordVisible = false;
 
   @override
   void initState() {
@@ -42,7 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.lightGreen,
-          title: Text(widget.title),
+          title: Align(
+              alignment: Alignment.center,
+              child: Text(
+                widget.title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28.5),
+              )),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -93,13 +101,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextField(
                   style: TextStyle(fontSize: 20.0),
                   controller: passwordController,
-                  obscureText: passwordVisible,
+                  obscureText: !passwordVisible,
                   keyboardType: TextInputType.visiblePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: const TextStyle(fontSize: 20),
                     hintText: 'Enter your Password',
                     prefixIcon: const Icon(Icons.password),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          passwordVisible =
+                              !passwordVisible; // Toggle password visibility
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
@@ -122,21 +144,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         barrierDismissible: false,
                         builder: (BuildContext context) {
                           return const passwordSetModal();
-                          /*return AlertDialog(
-                            title: const Text('Set/Reset your Password'),
-                            content: const Text(
-                                'Please contact Admin for your customer code'),
-                            actions: <Widget>[
-                              // Close button
-                              TextButton(
-                                child: const Text('CLOSE'),
-                                onPressed: () {
-                                  // Close the popup
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );*/
                         },
                       );
                     },
@@ -180,10 +187,12 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
-      if (customerCodeController.text.isNotEmpty) {
+      if (customerCodeController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
         requestLogin requestlogin = requestLogin();
         requestlogin.id = customerCodeController.text.toString();
         requestlogin.type = "0";
+        requestlogin.password = passwordController.text.toString();
         responseLogin res = await loginAPI(requestlogin);
         if (res.code == "200") {
           if (_storedContext != null) {
@@ -228,12 +237,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         )));
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Invalid Customer Code")));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content:
+                  Text("Something went wrong, please try after sometime")));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please Enter Customer Code")));
+            const SnackBar(content: Text("Please enter required fields")));
       }
     } catch (e) {
       if (kDebugMode) {
@@ -249,3 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
+
+//Hello Abhishek
+//110445
+//NI210888

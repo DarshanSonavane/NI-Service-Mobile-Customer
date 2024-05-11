@@ -99,10 +99,10 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
-        title: Text(_titles[_currentIndex]),
+        title: Text(_titles[_currentIndex],style: TextStyle(color: Colors.white),),
         leading: Builder(builder: (_context) {
           return IconButton(
-            icon: Icon(Icons.menu_outlined),
+            icon: const Icon(Icons.menu_outlined,color: Colors.white,),
             onPressed: () {
               if (isAmcDueValid) {
                 Scaffold.of(_context).openDrawer();
@@ -118,7 +118,7 @@ class _DashboardState extends State<Dashboard> {
             onChanged: isAmcDueValid ? toggleButtonCallback : null,
           ),
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout,color: Colors.white,),
             onPressed: () {
               logoutButtonClick();
             },
@@ -130,39 +130,46 @@ class _DashboardState extends State<Dashboard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.lightGreen,
               ),
               child: Align(
-                alignment: Alignment.topCenter,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Image.asset(
-                    'assets/images/nilogo.png',
-                    width: 150,
-                    height: 150,
-                  ),
+                alignment: Alignment.center,
+                child: Image.asset(
+                  'assets/images/nilogo.png',
+                  width: 120,
+                  height: 120,
                 ),
               ),
             ),
             ListTile(
-              title: const Text('Home', style: TextStyle(fontSize: 20)),
+              leading: Icon(Icons.home),
+              title: Text(
+                'Home',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 _navigateToScreen(0);
               },
             ),
-            const SizedBox(height: 10),
+            Divider(),
             ListTile(
-              title:
-                  const Text('My Complaints', style: TextStyle(fontSize: 20)),
+              leading: Icon(Icons.feedback),
+              title: Text(
+                'My Complaints',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 _navigateToScreen(1);
               },
             ),
-            const SizedBox(height: 10),
+            Divider(),
             ListTile(
-              title:
-                  const Text('Service Request', style: TextStyle(fontSize: 20)),
+              leading: Icon(Icons.design_services),
+              title: Text(
+                'Service Request',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 _navigateToScreen(2);
               },

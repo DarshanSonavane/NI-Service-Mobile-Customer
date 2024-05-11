@@ -10,7 +10,8 @@ class FeedbackDialog extends StatefulWidget {
   bool isLoading;
   final Function(String) callback;
 
-  FeedbackDialog(this.complaint, this.isLoading, {super.key, required this.callback});
+  FeedbackDialog(this.complaint, this.isLoading,
+      {super.key, required this.callback});
 
   @override
   _FeedbackDialogState createState() => _FeedbackDialogState();
@@ -93,26 +94,33 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                   widget.callback("200");
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(responseFeedback.message!)));
+
+                  if (kDebugMode) {
+                    print("Rating: $rating");
+                  }
+                  if (kDebugMode) {
+                    print("Feedback: $feedback");
+                  }
+
+                  Navigator.of(context).pop();
                 }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please enter required fields")));
               }
-
-              // You can handle the submission logic here
-              // For now, just print the values
-              if (kDebugMode) {
-                print("Rating: $rating");
-              }
-              if (kDebugMode) {
-                print("Feedback: $feedback");
-              }
-
-              Navigator.of(context).pop(); // Close the dialog
             } catch (e) {
               if (kDebugMode) {
                 print(e.toString());
               }
             }
           },
-          child: const Text("Submit"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue, // Background color
+          ),
+          child: const Text(
+            "Submit",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
