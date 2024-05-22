@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/passwordSetModal.dart';
 import 'package:ni_service/dashboard.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:searchfield/searchfield.dart';
 import 'http_service/services.dart';
 import 'model/responseLogin.dart';
 
@@ -24,14 +26,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final sharedPreferences = SharedPreferencesManager.instance;
   bool _isLoading = false;
   bool passwordVisible = false;
+  List<String> _usernames = [];
+
 
   @override
   void initState() {
     super.initState();
+    _loadUsernames().then((usernames) {
+      print("Loaded usernames: $usernames");
+      setState(() {
+        _usernames = usernames!;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    customerCodeController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    List<String> filteredUsernames = _usernames;
+    List<SearchFieldListItem<String>> convertToSearchFieldList(
+        List<String> filteredUsernames) {
+      return filteredUsernames
+          .map((String username) => SearchFieldListItem<String>(username))
+          .toList();
+    }
+
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
       progressIndicator: const CircularProgressIndicator(
@@ -60,46 +86,61 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.topCenter,
                 child: Image.asset(
                   'assets/images/nilogo.png',
-                  width: 250,
-                  height: 250,
+                  width: 150,
+                  height: 170,
                 ),
-              ),
-              const Text(
-                "Customer Code",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.lightGreen),
               ),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 18.0, horizontal: 18.0),
-                child: TextField(
-                  style: TextStyle(fontSize: 20.0),
-                  controller: customerCodeController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Customer Code',
-                    labelStyle: const TextStyle(fontSize: 20),
-                    hintText: 'Enter your Customer code',
-                    prefixIcon: const Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey), // Add border
+                        borderRadius: BorderRadius.circular(12.0),
+                        // Optional: Adjust border radius
+                      ),
+                      child: SearchField(
+                        suggestionStyle: const TextStyle(fontSize: 25.0),
+                        searchInputDecoration: const InputDecoration(
+                          labelText: "Customer Code",
+                          border: InputBorder.none,
+                          labelStyle: TextStyle(fontSize: 20),
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        suggestions: convertToSearchFieldList(filteredUsernames),
+                        hint: 'Enter your Customer code',
+                        itemHeight: 60,
+                        onSubmit: (value) {
+                          setState(() {
+                            customerCodeController.text = value;
+                          });
+                        },
+                        onSearchTextChanged: (value) {
+                          setState(() {
+                            customerCodeController.text = value;
+                          });
+
+                        },
+                        onSuggestionTap: (value) {
+                          setState(() {
+                            customerCodeController.text = value.searchKey;
+                          });
+                          FocusScope.of(context).unfocus();
+                        }
+                      ),
+                    )
+                  ],
                 ),
               ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 5.0, horizontal: 18.0),
                 child: TextField(
-                  style: TextStyle(fontSize: 20.0),
+                  style: const TextStyle(fontSize: 20.0),
                   controller: passwordController,
                   obscureText: !passwordVisible,
                   keyboardType: TextInputType.visiblePassword,
@@ -172,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
                   // Adjust padding
                   child: Text('Login',
-                      style: TextStyle(fontSize: 18.0)), // Adjust font size
+                      style: TextStyle(fontSize: 18.0,color: Colors.white)), // Adjust font size
                 ),
               ),
             ],
@@ -223,6 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 res.data![0].amcDue != null ? res.data![0].amcDue! : "";
             String customerId =
                 res.data![0].sId != null ? res.data![0].sId! : "";
+            _saveUsername(customerCodeController.text.toString());
 
             Navigator.pushReplacement(
                 _storedContext!,
@@ -260,6 +302,23 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-//Hello Abhishek
+Future<void> _saveUsername(String userName) async {
+  var box = await Hive.openBox<List<String>>('userBox');
+  List<String>? usernames = box.get('usernames', defaultValue: <String>[]);
+  if (!usernames!.contains(userName)) {
+    usernames.add(userName);
+    await box.put('usernames', usernames);
+  }
+  await box.close();
+}
+
+Future<List<String>?> _loadUsernames() async {
+  var box = await Hive.openBox<List<String>>('userBox');
+  List<String>? usernames = box.get('usernames', defaultValue: <String>[]);
+  await box.close();
+  return usernames;
+}
+
+
 //110445
-//NI210888
+

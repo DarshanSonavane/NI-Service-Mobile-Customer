@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ni_service/splash.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesManager.initialize();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 

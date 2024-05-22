@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ni_service/calibration_module/Calibration.dart';
 import 'package:ni_service/complain.dart';
 import 'package:ni_service/home.dart';
 import 'package:ni_service/service_request.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
+import 'calibration_module/TabbedCalibrationScreen.dart';
 import 'login_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -37,7 +39,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    _titles = ['Home', 'MY Complaints', 'Service Request'];
+    _titles = ['Home', 'MY Complaints', 'Service Request', 'Calibration'];
     _screens = [
       Home(
           title: "Home",
@@ -48,6 +50,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       const ComplainRequestList(title: "My Complaints"),
       const ServiceRequest(title: "Raise Complaint"),
+      const TabbedCalibrationScreen(title: "Calibration"),
     ];
 
     checkAmcDueValidity();
@@ -118,7 +121,7 @@ class _DashboardState extends State<Dashboard> {
             onChanged: isAmcDueValid ? toggleButtonCallback : null,
           ),
           IconButton(
-            icon: Icon(Icons.logout,color: Colors.white,),
+            icon: const Icon(Icons.logout,color: Colors.white,),
             onPressed: () {
               logoutButtonClick();
             },
@@ -130,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.lightGreen,
               ),
               child: Align(
@@ -143,8 +146,8 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text(
+              leading: const Icon(Icons.home),
+              title: const Text(
                 'Home',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -152,10 +155,10 @@ class _DashboardState extends State<Dashboard> {
                 _navigateToScreen(0);
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.feedback),
-              title: Text(
+              leading: const Icon(Icons.feedback),
+              title: const Text(
                 'My Complaints',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -163,10 +166,10 @@ class _DashboardState extends State<Dashboard> {
                 _navigateToScreen(1);
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.design_services),
-              title: Text(
+              leading: const Icon(Icons.design_services),
+              title: const Text(
                 'Service Request',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -174,6 +177,18 @@ class _DashboardState extends State<Dashboard> {
                 _navigateToScreen(2);
               },
             ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.compass_calibration),
+              title: const Text(
+                'Calibration',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                _navigateToScreen(3);
+              },
+            ),
+            const Divider(),
           ],
         ),
       ),

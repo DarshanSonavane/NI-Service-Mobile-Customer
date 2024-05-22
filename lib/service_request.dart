@@ -33,7 +33,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
     selectedRadioListTile = "Petrol";
     super.initState();
     _fetchComplaints();
-    //getComplaintList();
   }
 
   setSelectedRadioTile(String val) {
@@ -136,7 +135,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black38, width: 1.5),
                         borderRadius: BorderRadius.circular(
-                            8.0), // Optionally, add border radius
+                            8.0),
                       ),
                       child: GestureDetector(
                         onTap: () => showDropdownMenu(),
@@ -163,8 +162,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
                               borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 40.0, vertical: 16.0),
                             child: Text(
                               'Submit',
@@ -201,7 +200,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
                             ),
                           ),
                         ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Visibility(
                     visible: isComplaintOpen,
                     child: const Align(
@@ -372,7 +371,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     }
 
     setState(() {
-      _isLoading = false; // Data is fetched, set loading to false
+      _isLoading = false;
     });
   }
 
