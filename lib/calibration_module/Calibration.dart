@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/model/RequestCalibration.dart';
+import 'package:ni_service/model/RequestValidateCalibration.dart';
 import 'package:ni_service/model/ResponseGetEmpList.dart';
+import 'package:ni_service/model/ResponseValidateCalibration.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../http_service/services.dart';
@@ -18,23 +20,25 @@ class Calibration extends StatefulWidget {
 }
 
 class _CalibrationState extends State<Calibration> {
-  late String selectedRadioListTile;
+  String? selectedRadioListTile;
   late ResponseGetEmpList responseGetEmpList;
   Data? getEmpData;
   late List<Data> getEmpName = [];
   bool _isLoading = false;
   final sharedPreferences = SharedPreferencesManager.instance;
+  String? customerId = "";
 
   @override
   void initState() {
-    selectedRadioListTile = "Petrol";
     super.initState();
+    customerId = sharedPreferences?.getString("CustomerId");
     _fetchEmployeeData();
   }
 
   setSelectedRadioTile(String val) {
     setState(() {
       selectedRadioListTile = val;
+      _validateCalibration(val);
     });
   }
 
@@ -183,7 +187,8 @@ class _CalibrationState extends State<Calibration> {
                   const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: () {
-                      if (getEmpData.toString().isNotEmpty) {
+                      if (getEmpData != null &&
+                          getEmpData.toString().isNotEmpty) {
                         createCalibrationAPI(getEmpData!.sId);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -283,8 +288,6 @@ class _CalibrationState extends State<Calibration> {
   }
 
   Future<void> createCalibrationAPI(String? empId) async {
-    String? customerId = sharedPreferences?.getString("CustomerId");
-
     RequestCalibration requestCalibration = RequestCalibration();
     requestCalibration.customerId = customerId;
     String machineType = selectedRadioListTile == 'Petrol'
@@ -312,7 +315,8 @@ class _CalibrationState extends State<Calibration> {
               ),
               onPressed: () {
                 setState(() {
-                  getEmpData = null; // Reset dropdown to default value
+                  getEmpData = null;
+                  selectedRadioListTile = "";
                 });
                 Navigator.of(context).pop(); // Close the alert
               },
@@ -320,6 +324,60 @@ class _CalibrationState extends State<Calibration> {
             ),
           ],
         ).show();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _validateCalibration(String val) async {
+    RequestValidateCalibration requestValidateCalibration =
+        RequestValidateCalibration();
+    requestValidateCalibration.customerId = customerId;
+    String machineType = selectedRadioListTile == 'Petrol'
+        ? "0"
+        : (selectedRadioListTile == 'Diesel' ? "1" : "2");
+    requestValidateCalibration.machineType = machineType;
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final responseValidateCalibration =
+          await validateCalibrationRequest(requestValidateCalibration);
+      if (responseValidateCalibration.code == "200" &&
+          !responseValidateCalibration.isNewrecord!) {
+        if(responseValidateCalibration.differenceDays!.toInt() < 10){
+          Alert(
+            context: context,
+            title: 'Calibration Request',
+            desc:
+            "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days",
+            buttons: [
+              DialogButton(
+                child: const Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  setState(() {
+                    getEmpData = null;
+                    selectedRadioListTile = "";
+                  });
+                  Navigator.of(context).pop();
+                },
+                color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
+              ),
+            ],
+          ).show();
+        }
       }
     } catch (e) {
       if (kDebugMode) {

@@ -66,29 +66,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.lightGreen,
-          title: Align(
-              alignment: Alignment.center,
-              child: Text(
-                widget.title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 28.5),
-              )),
-        ),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 50),
               Align(
                 alignment: Alignment.topCenter,
                 child: Image.asset(
                   'assets/images/nilogo.png',
-                  width: 150,
-                  height: 170,
+                  width: 120,
+                  height: 150,
                 ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                widget.title,
+                style: const TextStyle(
+                    color: Colors.lightGreen,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28.5),
               ),
               const SizedBox(height: 20),
               Padding(
@@ -279,6 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         )));
           }
         } else {
+          passwordController.text = "";
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content:
                   Text("Something went wrong, please try after sometime")));
@@ -321,4 +319,3 @@ Future<List<String>?> _loadUsernames() async {
 
 
 //110445
-

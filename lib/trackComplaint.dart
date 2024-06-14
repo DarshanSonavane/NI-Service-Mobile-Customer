@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'http_service/services.dart';
 import 'model/RequestTrackComplaint.dart';
 import 'model/ResponseTrackComplaint.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class TrackComplaint extends StatefulWidget {
   final String complaintID;
@@ -20,6 +24,7 @@ class _TrackComplaintState extends State<TrackComplaint> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
     _futureStages = fetchTrackComplaint(
         RequestTrackComplaint(complaintId: widget.complaintID));
   }
@@ -116,13 +121,46 @@ class _TrackComplaintState extends State<TrackComplaint> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (stage.status == "2")
-                          Text(
-                            'Assigned to: ${stages.assignedDetails!.assignedTo!.firstName ?? ""} ${stages.assignedDetails!.assignedTo!.lastName}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Assigned to: ${stages.assignedDetails!.assignedTo!.firstName ?? ""} ${stages.assignedDetails!.assignedTo!.lastName}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Contact Number: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _launchPhone(stages
+                                        .assignedDetails!.assignedTo!.phone!),
+                                    child: Text(
+                                      stages.assignedDetails!.assignedTo!
+                                              .phone ??
+                                          "",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           )
                         else
                           Text(
@@ -135,7 +173,7 @@ class _TrackComplaintState extends State<TrackComplaint> {
                           ),
                         const SizedBox(height: 5),
                         Text(
-                          '${_getStatusText(stage.status!)} ${DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.parse(stage.createdAt!))}',
+                          getFormattedDate(stage.createdAt!, stage.status!),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black87,
@@ -166,6 +204,15 @@ class _TrackComplaintState extends State<TrackComplaint> {
     }
   }
 
+  String getFormattedDate(String createdAt, String status) {
+    DateTime dateTime = DateTime.parse(createdAt).toUtc();
+    final istTimeZone = tz.getLocation('Asia/Kolkata');
+    final istDateTime = tz.TZDateTime.from(dateTime, istTimeZone);
+    String formattedDate =
+        DateFormat('dd MMM yyyy, hh:mm a').format(istDateTime);
+    return '${_getStatusText(status)} $formattedDate';
+  }
+
   String getStatusText(String status) {
     switch (status) {
       case "0":
@@ -178,14 +225,9 @@ class _TrackComplaintState extends State<TrackComplaint> {
         return "";
     }
   }
+
+  void _launchPhone(String phoneNumber) async {
+    launchUrlString("tel://$phoneNumber");
+
+  }
 }
-
-
-
-///Calibration
-///
-///
-/// add combo radio button in service request
-/// Select Employee
-/// Submit
-

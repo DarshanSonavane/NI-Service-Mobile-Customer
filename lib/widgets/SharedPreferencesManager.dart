@@ -14,3 +14,29 @@ class SharedPreferencesManager {
     return _instance;
   }
 }
+
+Future<void> clearExcept(String keyToKeep) async {
+  final sharedPreferences = SharedPreferencesManager.instance;
+  if (sharedPreferences != null) {
+    // Get the value for the key you want to keep
+    final valueToKeep = sharedPreferences.get(keyToKeep);
+
+    // Clear all shared preferences
+    await sharedPreferences.clear();
+
+    // Restore the value for the key you wanted to keep
+    if (valueToKeep != null) {
+      if (valueToKeep is int) {
+        sharedPreferences.setInt(keyToKeep, valueToKeep);
+      } else if (valueToKeep is double) {
+        sharedPreferences.setDouble(keyToKeep, valueToKeep);
+      } else if (valueToKeep is bool) {
+        sharedPreferences.setBool(keyToKeep, valueToKeep);
+      } else if (valueToKeep is String) {
+        sharedPreferences.setString(keyToKeep, valueToKeep);
+      } else if (valueToKeep is List<String>) {
+        sharedPreferences.setStringList(keyToKeep, valueToKeep);
+      }
+    }
+  }
+}

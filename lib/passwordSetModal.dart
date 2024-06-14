@@ -220,7 +220,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
   }
 
   bool validatePassword(String password) {
-    // Password regex pattern
+    // Password regex patter
     final passwordRegex = RegExp(
       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
     );

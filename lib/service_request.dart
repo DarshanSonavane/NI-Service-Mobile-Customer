@@ -229,17 +229,23 @@ class _ServiceRequestState extends State<ServiceRequest> {
 
   Future<void> getComplaintList() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      if(mounted){
+        setState(() {
+          _isLoading = true;
+        });
+      }
+
       responseGetComplaint = await getComplaintListAPI();
       if (responseGetComplaint.code == "200" &&
           responseGetComplaint.data != null) {
         List<dataComplainType> fetchedData =
             List<dataComplainType>.from(responseGetComplaint.data!);
-        setState(() {
-          complaintDatas = fetchedData;
-        });
+        if(mounted){
+          setState(() {
+            complaintDatas = fetchedData;
+          });
+        }
+
       }
     } catch (e) {
       if (kDebugMode) {
@@ -247,9 +253,12 @@ class _ServiceRequestState extends State<ServiceRequest> {
       }
     } finally {
       await Future.delayed(Duration(seconds: 2));
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted){
+        setState(() {
+          _isLoading = false;
+        });
+      }
+
     }
   }
 

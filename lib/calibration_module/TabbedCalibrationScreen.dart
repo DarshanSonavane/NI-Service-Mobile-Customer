@@ -24,9 +24,9 @@ class TabbedCalibrationScreen extends StatelessWidget {
                     child: Container(),
                   ),
                   const TabBar(
-                    indicatorColor: Colors.cyan,
+                    indicatorColor: Colors.red,
                     // Change the indicator color
-                    labelColor: Colors.cyan,
+                    labelColor: Colors.red,
                     // Change the label text color
                     unselectedLabelColor: Colors.black,
                     // Change the unselected label text color

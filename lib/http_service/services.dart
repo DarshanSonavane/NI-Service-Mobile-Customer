@@ -4,6 +4,7 @@ import 'package:ni_service/model/RequestCustomerDetailsModel.dart';
 import 'package:ni_service/model/RequestGetCustomerCalibrationList.dart';
 import 'package:ni_service/model/RequestSetPassword.dart';
 import 'package:ni_service/model/RequestTrackComplaint.dart';
+import 'package:ni_service/model/RequestValidateCalibration.dart';
 import 'package:ni_service/model/ResponseCalibrationService.dart';
 import 'package:ni_service/model/ResponseCustomerDetailsModel.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
@@ -12,6 +13,7 @@ import 'package:ni_service/model/ResponseGetCustomerCalibrationList.dart';
 import 'package:ni_service/model/ResponseGetEmpList.dart';
 import 'package:ni_service/model/ResponseSetPassword.dart';
 import 'package:ni_service/model/ResponseTrackComplaint.dart';
+import 'package:ni_service/model/ResponseValidateCalibration.dart';
 import 'package:ni_service/model/requestCreateService.dart';
 import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/requestLogin.dart';
@@ -229,6 +231,24 @@ Future<ResponseGetCustomerCalibrationList> fetchCalibrationList(
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseGetCustomerCalibrationList.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseValidateCalibration> validateCalibrationRequest(
+    RequestValidateCalibration requestValidateCalibration) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/validate-calibration"),
+        body: jsonEncode(requestValidateCalibration),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseValidateCalibration.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }
