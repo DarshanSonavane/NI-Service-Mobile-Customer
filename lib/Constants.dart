@@ -8,3 +8,4 @@ const String MYCOMPLAINT = "You can see the all the request raise in the My Comp
 const String CALIBRATION = "You can raise a calibration request by click on the selected tab";
 const String CALIBRATIONLIST = "You can see all the raised calibration in the above screen";
 const String ONBOARDINGCOMPLETED = "onboardingCompleted";
+const String CUSTOMERID = "CustomerId";

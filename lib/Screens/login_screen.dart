@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ni_service/passwordSetModal.dart';
-import 'package:ni_service/dashboard.dart';
+import 'package:ni_service/Screens/passwordSetModal.dart';
+import 'package:ni_service/Screens/dashboard.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 import 'package:searchfield/searchfield.dart';
-import 'http_service/services.dart';
-import 'model/responseLogin.dart';
+import '../http_service/services.dart';
+import '../model/responseLogin.dart';
 
 class LoginScreen extends StatefulWidget {
   final String title;

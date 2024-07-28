@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ni_service/model/RequestSetPassword.dart';
 
-import 'http_service/services.dart';
-import 'model/ResponseSetPassword.dart';
+import '../http_service/services.dart';
+import '../model/ResponseSetPassword.dart';
 
 class passwordSetModal extends StatefulWidget {
   const passwordSetModal({super.key});

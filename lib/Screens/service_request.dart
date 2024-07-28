@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:ni_service/Constants.dart';
 import 'package:ni_service/model/responseGetComplaintType.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'http_service/services.dart';
-import 'model/requestCreateService.dart';
-import 'model/responseGetServiceRequestList.dart';
+import '../http_service/services.dart';
+import '../model/requestCreateService.dart';
+import '../model/responseGetServiceRequestList.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ServiceRequest extends StatefulWidget {
@@ -263,7 +264,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
   }
 
   Future<void> createServiceRequestAPI() async {
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     String? complaintTypes = selectedComplaint!.sId!;
     requestCreateService requestCreateServices = requestCreateService();
     requestCreateServices.machineType =
@@ -353,7 +354,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
       _isLoading = true;
     });
 
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     final responseGetServiceRequestList = await fetchComplaints(customerId!);
     if (responseGetServiceRequestList.code == "200" &&
         responseGetServiceRequestList.data != null) {

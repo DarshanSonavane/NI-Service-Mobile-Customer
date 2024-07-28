@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ni_service/Constants.dart';
 import 'package:ni_service/model/RequestGetCustomerCalibrationList.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../http_service/services.dart';
@@ -21,7 +22,7 @@ class _CalibrationListScreenState extends State<CalibrationListScreen> {
   @override
   void initState() {
     super.initState();
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     RequestGetCustomerCalibrationList requestCalibration =
         RequestGetCustomerCalibrationList();
     requestCalibration.customerId = customerId;

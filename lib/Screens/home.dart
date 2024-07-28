@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ni_service/customDialogForMobileGSTAndEmail.dart';
+import 'package:ni_service/Constants.dart';
+import 'package:ni_service/Screens/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
-import 'http_service/services.dart';
+import '../http_service/services.dart';
 
 class Home extends StatefulWidget {
   final String title;
@@ -199,7 +200,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _isLoading = true;
     });
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     ResponseDashboardDetails responseDashboardDetails =
         await complaintsCounts(customerId!);
     BuildContext currentContext = context;

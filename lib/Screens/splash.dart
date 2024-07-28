@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ni_service/Constants.dart';
-import 'package:ni_service/dashboard.dart';
+import 'package:ni_service/Screens/dashboard.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
-import 'package:ni_service/login_screen.dart';
+import 'package:ni_service/Screens/login_screen.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bool onboardingCompleted =
           sharedPreferences?.getBool(ONBOARDINGCOMPLETED) ?? false;
       if (onboardingCompleted) {
-        String? customerId = sharedPreferences?.getString("CustomerId");
+        String? customerId = sharedPreferences?.getString(CUSTOMERID);
         String? cusName = sharedPreferences?.getString("CustomerName");
         String? amc_Due = sharedPreferences?.getString("AMCDUE");
         String? mobile_num = sharedPreferences?.getString("MOBILE");

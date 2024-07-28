@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ni_service/Constants.dart';
+import 'package:ni_service/Screens/NotificationDisplayScreen.dart';
 import 'package:ni_service/calibration_module/Calibration.dart';
-import 'package:ni_service/complain.dart';
-import 'package:ni_service/home.dart';
+import 'package:ni_service/Screens/complain.dart';
+import 'package:ni_service/Screens/home.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
-import 'package:ni_service/service_request.dart';
+import 'package:ni_service/Screens/service_request.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
-import 'calibration_module/TabbedCalibrationScreen.dart';
+import '../calibration_module/TabbedCalibrationScreen.dart';
+import '../http_service/firebase_api.dart';
 import 'login_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -38,10 +40,18 @@ class _DashboardState extends State<Dashboard> {
   late List<Widget> _screens;
   bool isAmcDueValid = false;
   DateTime? amcDueDateTime; // Store amcDue as DateTime
+  final FirebaseApi _firebaseApi = FirebaseApi();
 
   @override
   void initState() {
-    _titles = ['Home', 'My Complaints', 'Service Request', 'Calibration','Help'];
+    sendFCMNotificationDetails();
+    _titles = [
+      'Home',
+      'My Complaints',
+      'Service Request',
+      'Calibration',
+      'Help'
+    ];
     _screens = [
       Home(
         title: "Home",
@@ -53,7 +63,9 @@ class _DashboardState extends State<Dashboard> {
       const ComplainRequestList(title: "My Complaints"),
       const ServiceRequest(title: "Raise Complaint"),
       const TabbedCalibrationScreen(title: "Calibration"),
-      const OnBoardingPage(isLoggedIn: true,),
+      const OnBoardingPage(
+        isLoggedIn: true,
+      ),
     ];
 
     checkAmcDueValidity();
@@ -131,6 +143,16 @@ class _DashboardState extends State<Dashboard> {
           ),
           IconButton(
             icon: const Icon(
+              Icons.notifications,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () {
+              notificationIconClick();
+            },
+          ),
+          IconButton(
+            icon: const Icon(
               Icons.logout,
               color: Colors.white,
             ),
@@ -164,7 +186,8 @@ class _DashboardState extends State<Dashboard> {
                     leading: const Icon(Icons.home),
                     title: const Text(
                       'Home',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
                       _navigateToScreen(0);
@@ -175,7 +198,8 @@ class _DashboardState extends State<Dashboard> {
                     leading: const Icon(Icons.feedback),
                     title: const Text(
                       'My Complaints',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
                       _navigateToScreen(1);
@@ -186,7 +210,8 @@ class _DashboardState extends State<Dashboard> {
                     leading: const Icon(Icons.design_services),
                     title: const Text(
                       'Service Request',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
                       _navigateToScreen(2);
@@ -197,7 +222,8 @@ class _DashboardState extends State<Dashboard> {
                     leading: const Icon(Icons.compass_calibration),
                     title: const Text(
                       'Calibration',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
                       _navigateToScreen(3);
@@ -238,5 +264,17 @@ class _DashboardState extends State<Dashboard> {
         context,
         MaterialPageRoute(
             builder: (context) => const LoginScreen(title: "Login")));
+  }
+
+  void notificationIconClick() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                const Notificationdisplayscreen(title: "Notification")));
+  }
+
+  void sendFCMNotificationDetails() {
+    _firebaseApi.initNotifications(context);
   }
 }

@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:ni_service/model/FCMDetails/RequestFCMKeyDetails.dart';
+import 'package:ni_service/model/FCMDetails/ResponseFCMKeyDetails.dart';
 import 'package:ni_service/model/RequestCalibration.dart';
 import 'package:ni_service/model/RequestCustomerDetailsModel.dart';
 import 'package:ni_service/model/RequestGetCustomerCalibrationList.dart';
@@ -11,6 +15,7 @@ import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/model/ResponseFeedback.dart';
 import 'package:ni_service/model/ResponseGetCustomerCalibrationList.dart';
 import 'package:ni_service/model/ResponseGetEmpList.dart';
+import 'package:ni_service/model/ResponseNotificationList.dart';
 import 'package:ni_service/model/ResponseSetPassword.dart';
 import 'package:ni_service/model/ResponseTrackComplaint.dart';
 import 'package:ni_service/model/ResponseValidateCalibration.dart';
@@ -84,8 +89,7 @@ Future<responseGetServiceRequestList> fetchComplaints(String customerId) async {
     };
     final queryParameters = {'customerId': customerId};
     var res = await http.get(
-        Uri.http(
-            "16.170.250.91:3000", "/get-my-complaints", queryParameters),
+        Uri.http("16.170.250.91:3000", "/get-my-complaints", queryParameters),
         headers: headers);
     final json = jsonDecode(res.body);
     return responseGetServiceRequestList.fromJson(json);
@@ -119,10 +123,8 @@ Future<ResponseFeedback> sendFeedbackRequest(
       'Content-type': 'application/json',
     };
 
-    var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/save-feedback"),
-        body: jsonEncode(requestFeedback),
-        headers: headers);
+    var res = await http.post(Uri.http("16.170.250.91:3000", "/save-feedback"),
+        body: jsonEncode(requestFeedback), headers: headers);
     final json = jsonDecode(res.body);
     return ResponseFeedback.fromJson(json);
   } catch (e) {
@@ -184,7 +186,6 @@ Future<ResponseTrackComplaint> fetchTrackComplaint(
   }
 }
 
-
 Future<ResponseGetEmpList> fetchDataEmployeeCalibration() async {
   try {
     Map<String, String> headers = {
@@ -195,6 +196,21 @@ Future<ResponseGetEmpList> fetchDataEmployeeCalibration() async {
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseGetEmpList.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseNotificationList> fetchNotifications() async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+    var res = await http.get(
+        Uri.http("16.170.250.91:3000", "/fetch-notification"),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseNotificationList.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }
@@ -254,4 +270,20 @@ Future<ResponseValidateCalibration> validateCalibrationRequest(
   }
 }
 
+Future<ResponseFCMKeyDetails> sendTokenToServer(
+    RequestFCMKeyDetails requestFcmKeyDetails) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
 
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/insert-customer-fcm-details"),
+        body: jsonEncode(requestFcmKeyDetails),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseFCMKeyDetails.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
