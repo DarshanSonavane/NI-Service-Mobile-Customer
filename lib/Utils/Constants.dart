@@ -9,3 +9,4 @@ const String CALIBRATION = "You can raise a calibration request by click on the 
 const String CALIBRATIONLIST = "You can see all the raised calibration in the above screen";
 const String ONBOARDINGCOMPLETED = "onboardingCompleted";
 const String CUSTOMERID = "CustomerId";
+const APPTITLE = "NI Service";

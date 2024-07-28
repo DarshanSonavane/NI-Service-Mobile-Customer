@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ni_service/Constants.dart';
+import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/model/responseGetComplaintType.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';

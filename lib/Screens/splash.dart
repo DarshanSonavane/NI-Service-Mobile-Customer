@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ni_service/Constants.dart';
+import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/dashboard.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/login_screen.dart';

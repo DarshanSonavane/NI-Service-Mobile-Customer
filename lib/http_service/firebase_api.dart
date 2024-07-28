@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ni_service/http_service/services.dart';
 import 'package:ni_service/model/FCMDetails/RequestFCMKeyDetails.dart';
-import '../Constants.dart';
+import '../Utils/Constants.dart';
 import '../Screens/NotificationDisplayScreen.dart';
 import '../main.dart';
 import '../widgets/SharedPreferencesManager.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:ni_service/Screens/login_screen.dart';
 
-import '../Constants.dart';
+import '../Utils/Constants.dart';
 import '../widgets/SharedPreferencesManager.dart';
 
 class OnBoardingPage extends StatefulWidget {

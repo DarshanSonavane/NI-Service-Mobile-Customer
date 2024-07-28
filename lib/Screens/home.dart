@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ni_service/Constants.dart';
+import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/NotificationDisplayScreen.dart';
 import 'package:ni_service/firebase_options.dart';
 import 'package:ni_service/http_service/firebase_api.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      title: 'NI Service',
+      title: APPTITLE,
       routes: {
         Notificationdisplayscreen.routeName: (context) => const Notificationdisplayscreen(title: "Notification"),
       },
