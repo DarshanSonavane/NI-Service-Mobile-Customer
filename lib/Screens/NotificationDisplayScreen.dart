@@ -5,9 +5,6 @@ import 'package:ni_service/Screens/MediaDisplayScreen.dart';
 import '../http_service/services.dart';
 import '../model/ResponseNotificationList.dart';
 
-
-
-
 class Notificationdisplayscreen extends StatefulWidget {
   static const String routeName = '/notification_display';
   final String title;
@@ -125,7 +122,7 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                       child: CustomPaint(
                         size: const Size(100, 150),
                         painter: CustomCardShapePainter(
-                            _borderRadius, Colors.redAccent, Colors.pinkAccent),
+                            _borderRadius, Colors.yellowAccent),
                       ),
                     ),
                     Positioned.fill(
@@ -140,7 +137,7 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                             ),
                             child: const Icon(
                               Icons.arrow_forward,
-                              color: Colors.white,
+                              color: Colors.pinkAccent,
                               size: 40.0,
                             ),
                           ),
@@ -160,10 +157,9 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
 
 class CustomCardShapePainter extends CustomPainter {
   final double radius;
-  final Color startColor;
   final Color endColor;
 
-  CustomCardShapePainter(this.radius, this.startColor, this.endColor);
+  CustomCardShapePainter(this.radius, this.endColor);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -172,7 +168,7 @@ class CustomCardShapePainter extends CustomPainter {
     var paint = Paint();
     paint.shader = ui.Gradient.linear(
         const Offset(0, 0), Offset(size.width, size.height), [
-      HSLColor.fromColor(startColor).withLightness(0.8).toColor(),
+      HSLColor.fromColor(const Color(0xFFFFC90F)).withLightness(0.8).toColor(),
       endColor
     ]);
 
