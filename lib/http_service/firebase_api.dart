@@ -94,46 +94,6 @@ class FirebaseApi {
   }
 
 
-  // Future<void> initNotifications(BuildContext context) async {
-  //   await _firebaseMessaging.requestPermission();
-  //   final fcmToken = await _firebaseMessaging.getToken();
-  //   print("FCMTOKEN $fcmToken");
-  //   if (fcmToken != null) {
-  //     RequestFCMKeyDetails requestFCMKeyDetails = RequestFCMKeyDetails();
-  //     requestFCMKeyDetails.customerId =
-  //         sharedPreferences?.getString(CUSTOMERID);
-  //     requestFCMKeyDetails.deviceId = await getDeviceId();
-  //     requestFCMKeyDetails.fcmKey = fcmToken;
-  //     await sendTokenToServer(requestFCMKeyDetails);
-  //   }
-  //   initPushNotifications(context);
-  //
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //     _showNotification(message);
-  //   });
-  // }
-
-  // void _showNotification(RemoteMessage message) async {
-  //   const AndroidNotificationDetails androidPlatformChannelSpecifics =
-  //       AndroidNotificationDetails(
-  //     'your_channel_id',
-  //     'your_channel_name',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //     showWhen: false,
-  //   );
-  //
-  //   const NotificationDetails platformChannelSpecifics =
-  //       NotificationDetails(android: androidPlatformChannelSpecifics);
-  //
-  //   await flutterLocalNotificationsPlugin.show(
-  //     message.notification.hashCode,
-  //     message.notification?.title,
-  //     message.notification?.body,
-  //     platformChannelSpecifics,
-  //     payload: message.data['payload'],
-  //   );
-  // }
 
   void _handleNotificationResponse(NotificationResponse response) {
     if (response.payload != null) {

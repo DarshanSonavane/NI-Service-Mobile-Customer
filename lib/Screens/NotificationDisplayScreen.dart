@@ -110,6 +110,8 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 10,
                               ),
+
+
                             ),
                           ],
                         ),
@@ -133,7 +135,7 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                           child: GestureDetector(
                             onTap: () => _onArrowIconPressed(
                               notification.file!,
-                              notification.extension == 'mp4' ? true : false,
+                              notification.extension?.toLowerCase() == 'mp4' ? true : false,
                             ),
                             child: const Icon(
                               Icons.arrow_forward,
