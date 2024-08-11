@@ -99,12 +99,12 @@ Future<responseGetServiceRequestList> fetchComplaints(String customerId) async {
 }
 
 //http://16.170.250.91:3000/get-dashboard-details
-Future<ResponseDashboardDetails> complaintsCounts(String customerId) async {
+Future<ResponseDashboardDetails> complaintsCounts(String customerId, String appVersion) async {
   try {
     Map<String, String> headers = {
       'Content-type': 'application/json',
     };
-    final queryParameters = {'customerId': customerId};
+    final queryParameters = {'customerId': customerId, 'version' : appVersion};
     var res = await http.get(
         Uri.http(
             "16.170.250.91:3000", "/get-dashboard-details", queryParameters),

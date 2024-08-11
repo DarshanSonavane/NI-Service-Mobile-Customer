@@ -10,3 +10,4 @@ const String CALIBRATIONLIST = "You can see all the raised calibration in the ab
 const String ONBOARDINGCOMPLETED = "onboardingCompleted";
 const String CUSTOMERID = "CustomerId";
 const APPTITLE = "NI Service";
+const String VersionApp = '4.0.0+11';

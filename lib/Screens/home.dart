@@ -5,6 +5,8 @@ import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../http_service/services.dart';
 
@@ -202,7 +204,7 @@ class _HomeState extends State<Home> {
     });
     String? customerId = sharedPreferences?.getString(CUSTOMERID);
     ResponseDashboardDetails responseDashboardDetails =
-        await complaintsCounts(customerId!);
+        await complaintsCounts(customerId!,VersionApp);
     BuildContext currentContext = context;
     if (responseDashboardDetails.code == "200") {
       if (emailMobileAvailable) {
@@ -229,8 +231,36 @@ class _HomeState extends State<Home> {
         closedComplaints = responseDashboardDetails.closeComplaints!;
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseDashboardDetails.message!)));
+      Alert(
+        context: context,
+        title: 'Service Request',
+        desc: responseDashboardDetails.message,
+        buttons: [
+          if (responseDashboardDetails.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            DialogButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the alert
+              },
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
+            ),
+          if (responseDashboardDetails.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            DialogButton(
+              onPressed: () {
+                _launchPlayStore();
+                Navigator.of(context).pop(); // Close the alert
+              },
+              color: Colors.blue,
+              child: const Text(
+                'Update',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
+            ),
+        ],
+      ).show();
     }
     setState(() {
       _isLoading = false; // Data is fetched, set loading to false
@@ -272,6 +302,16 @@ class _HomeState extends State<Home> {
       return "Total Visits :- $closedComplaints";
     } else {
       return "Total Visit :- $closedComplaints";
+    }
+  }
+
+  void _launchPlayStore() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
     }
   }
 

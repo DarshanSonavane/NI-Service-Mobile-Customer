@@ -272,7 +272,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
     requestCreateServices.complaintType = complaintTypes;
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
-    requestCreateServices.version = "4.0.0+10";
+    requestCreateServices.version = VersionApp;
     try {
       setState(() {
         _isLoading = true;
@@ -311,30 +311,29 @@ class _ServiceRequestState extends State<ServiceRequest> {
           buttons: [
             if (responseCreateService.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
               DialogButton(
-                child: Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the alert
                 },
-                color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
+                color: Color.fromRGBO(0, 179, 134, 1.0),
+                child: const Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ), // Button color
               ),
             if (responseCreateService.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
               DialogButton(
-                child: Text(
-                  'Update',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
                 onPressed: () {
                   _launchPlayStore();
                   Navigator.of(context).pop(); // Close the alert
                 },
-                color: Colors.blue, // Button color
+                color: Colors.blue,
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ), // Button color
               ),
           ],
         ).show();
-
       }
     } catch (e) {
       if (kDebugMode) {
