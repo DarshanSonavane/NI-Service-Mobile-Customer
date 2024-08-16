@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -50,7 +51,7 @@ class _TrackComplaintState extends State<TrackComplaint> {
         future: _futureStages,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: Imageprogressindicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData ||
@@ -228,6 +229,5 @@ class _TrackComplaintState extends State<TrackComplaint> {
 
   void _launchPhone(String phoneNumber) async {
     launchUrlString("tel://$phoneNumber");
-
   }
 }

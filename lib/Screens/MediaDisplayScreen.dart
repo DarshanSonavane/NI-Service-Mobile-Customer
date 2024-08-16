@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -89,7 +90,7 @@ class _MediadisplayscreenState extends State<Mediadisplayscreen> {
         child: widget.isVideo
             ? (_isVideoLoaded
                 ? Chewie(controller: _chewieController)
-                : const CircularProgressIndicator())
+                : const Imageprogressindicator())
             : Image.memory(base64Decode(widget.base64Data
                 .replaceRange(0, widget.base64Data.indexOf(',') + 1, ''))),
       ),

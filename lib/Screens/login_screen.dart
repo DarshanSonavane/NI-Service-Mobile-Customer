@@ -6,6 +6,7 @@ import 'package:ni_service/Screens/passwordSetModal.dart';
 import 'package:ni_service/Screens/dashboard.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:searchfield/searchfield.dart';
 import '../http_service/services.dart';
 import '../model/responseLogin.dart';
@@ -28,12 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool passwordVisible = false;
   List<String> _usernames = [];
 
-
   @override
   void initState() {
     super.initState();
     _loadUsernames().then((usernames) {
-      print("Loaded usernames: $usernames");
       setState(() {
         _usernames = usernames!;
       });
@@ -49,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     List<String> filteredUsernames = _usernames;
     List<SearchFieldListItem<String>> convertToSearchFieldList(
         List<String> filteredUsernames) {
@@ -60,10 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -101,34 +96,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Optional: Adjust border radius
                       ),
                       child: SearchField(
-                        suggestionStyle: const TextStyle(fontSize: 25.0),
-                        searchInputDecoration: const InputDecoration(
-                          labelText: "Customer Code",
-                          border: InputBorder.none,
-                          labelStyle: TextStyle(fontSize: 20),
-                          prefixIcon: Icon(Icons.person),
-                        ),
-                        suggestions: convertToSearchFieldList(filteredUsernames),
-                        hint: 'Enter your Customer code',
-                        itemHeight: 60,
-                        onSubmit: (value) {
-                          setState(() {
-                            customerCodeController.text = value;
-                          });
-                        },
-                        onSearchTextChanged: (value) {
-                          setState(() {
-                            customerCodeController.text = value;
-                          });
-
-                        },
-                        onSuggestionTap: (value) {
-                          setState(() {
-                            customerCodeController.text = value.searchKey;
-                          });
-                          FocusScope.of(context).unfocus();
-                        }
-                      ),
+                          suggestionStyle: const TextStyle(fontSize: 25.0),
+                          searchInputDecoration: const InputDecoration(
+                            labelText: "Customer Code",
+                            border: InputBorder.none,
+                            labelStyle: TextStyle(fontSize: 20),
+                            prefixIcon: Icon(Icons.person),
+                          ),
+                          suggestions:
+                              convertToSearchFieldList(filteredUsernames),
+                          hint: 'Enter your Customer code',
+                          itemHeight: 60,
+                          onSubmit: (value) {
+                            setState(() {
+                              customerCodeController.text = value;
+                            });
+                          },
+                          onSearchTextChanged: (value) {
+                            setState(() {
+                              customerCodeController.text = value;
+                            });
+                          },
+                          onSuggestionTap: (value) {
+                            setState(() {
+                              customerCodeController.text = value.searchKey;
+                            });
+                            FocusScope.of(context).unfocus();
+                          }),
                     )
                   ],
                 ),
@@ -210,7 +204,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
                   // Adjust padding
                   child: Text('Login',
-                      style: TextStyle(fontSize: 18.0,color: Colors.white)), // Adjust font size
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white)), // Adjust font size
                 ),
               ),
             ],
@@ -232,6 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
         requestlogin.type = "0";
         requestlogin.password = passwordController.text.toString();
         responseLogin res = await loginAPI(requestlogin);
+
         if (res.code == "200") {
           if (_storedContext != null) {
             String? email = res.data![0].email;
@@ -297,6 +294,21 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
     }
+  }
+}
+
+class loading_indicator extends StatelessWidget {
+  const loading_indicator({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/loader.gif', // Replace with the path to your GIF
+      width: 100,
+      height: 100,
+    );
   }
 }
 

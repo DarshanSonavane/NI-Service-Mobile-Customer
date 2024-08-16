@@ -5,6 +5,7 @@ import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/model/RequestCalibration.dart';
 import 'package:ni_service/model/RequestValidateCalibration.dart';
 import 'package:ni_service/model/ResponseGetEmpList.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../http_service/services.dart';
@@ -46,10 +47,7 @@ class _CalibrationState extends State<Calibration> {
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Scaffold(
         body: Container(
           color: Colors.grey.shade300,
@@ -354,12 +352,12 @@ class _CalibrationState extends State<Calibration> {
           await validateCalibrationRequest(requestValidateCalibration);
       if (responseValidateCalibration.code == "200" &&
           !responseValidateCalibration.isNewrecord!) {
-        if(responseValidateCalibration.differenceDays!.toInt() < 10){
+        if (responseValidateCalibration.differenceDays!.toInt() < 10) {
           Alert(
             context: context,
             title: 'Calibration Request',
             desc:
-            "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days",
+                "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days",
             buttons: [
               DialogButton(
                 child: const Text(

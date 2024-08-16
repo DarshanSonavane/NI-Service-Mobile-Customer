@@ -27,7 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image(
-          image: AssetImage('assets/images/niservice.gif'), // Replace with your GIF image path
+          image: AssetImage(
+              'assets/images/niservice.gif'), // Replace with your GIF image path
           width: 300,
           height: 300,
         ),
@@ -46,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
         String? mobile_num = sharedPreferences?.getString("MOBILE");
         String? email_id = sharedPreferences?.getString("EMAIL");
         if (customerId != null && customerId.isNotEmpty) {
-          Future.delayed(const Duration(seconds:10), () {
+          Future.delayed(const Duration(seconds: 5), () {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         customer_id: customerId)));
           });
         } else {
-          Future.delayed(const Duration(seconds: 10), () {
+          Future.delayed(const Duration(seconds: 5), () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -72,7 +73,10 @@ class _SplashScreenState extends State<SplashScreen> {
         Future.delayed(const Duration(seconds: 10), () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const OnBoardingPage(isLoggedIn: false,)),
+            MaterialPageRoute(
+                builder: (context) => const OnBoardingPage(
+                      isLoggedIn: false,
+                    )),
           );
         });
       }

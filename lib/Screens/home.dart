@@ -5,6 +5,7 @@ import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -38,10 +39,8 @@ class _HomeState extends State<Home> {
   final sharedPreferences = SharedPreferencesManager.instance;
   bool emailMobileAvailable = false;
 
-
   @override
   void initState() {
-
     if (widget.email != null &&
         widget.email!.isNotEmpty &&
         widget.mobile != null &&
@@ -56,16 +55,11 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Container(
         color: Colors.grey.shade300,
         child: Center(
@@ -204,7 +198,7 @@ class _HomeState extends State<Home> {
     });
     String? customerId = sharedPreferences?.getString(CUSTOMERID);
     ResponseDashboardDetails responseDashboardDetails =
-        await complaintsCounts(customerId!,VersionApp);
+        await complaintsCounts(customerId!, VersionApp);
     BuildContext currentContext = context;
     if (responseDashboardDetails.code == "200") {
       if (emailMobileAvailable) {
@@ -236,7 +230,8 @@ class _HomeState extends State<Home> {
         title: 'Service Request',
         desc: responseDashboardDetails.message,
         buttons: [
-          if (responseDashboardDetails.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+          if (responseDashboardDetails.message !=
+              'Please update the app to keep using it. If you don\'t update, the app might stop working.')
             DialogButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the alert
@@ -247,7 +242,8 @@ class _HomeState extends State<Home> {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ), // Button color
             ),
-          if (responseDashboardDetails.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+          if (responseDashboardDetails.message ==
+              'Please update the app to keep using it. If you don\'t update, the app might stop working.')
             DialogButton(
               onPressed: () {
                 _launchPlayStore();
@@ -306,7 +302,8 @@ class _HomeState extends State<Home> {
   }
 
   void _launchPlayStore() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+    const url =
+        'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -314,6 +311,4 @@ class _HomeState extends State<Home> {
       throw 'Could not launch $url';
     }
   }
-
-
 }

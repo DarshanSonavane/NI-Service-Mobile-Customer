@@ -3,6 +3,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Screens/trackComplaint.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 import 'package:intl/intl.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import '../Utils/Constants.dart';
 import 'feedbackDialog.dart';
 import '../http_service/services.dart';
@@ -58,10 +59,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Scaffold(
         body: Container(
           color: Colors.grey.shade300,

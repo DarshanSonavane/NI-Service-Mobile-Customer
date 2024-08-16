@@ -4,6 +4,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/model/responseGetComplaintType.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../http_service/services.dart';
 import '../model/requestCreateService.dart';
@@ -28,6 +29,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
   final sharedPreferences = SharedPreferencesManager.instance;
   List<DataComplaintsList>? dataComplainList;
   bool isComplaintOpen = false;
+  final TextEditingController additionalRequirementController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -48,179 +51,203 @@ class _ServiceRequestState extends State<ServiceRequest> {
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         body: Container(
           color: Colors.grey.shade300,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(15.0), // Add rounded corners
-              ),
-              child: Column(
-                children: [
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 18.0, top: 30),
-                      child: Text(
-                        'Machine Type',
-                        style: TextStyle(
-                            fontSize: 25,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold),
-                      ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15.0), // Add rounded corners
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  RadioListTile(
-                    activeColor: Colors.lightGreen,
-                    title: Text(
-                      "Petrol",
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    value: "Petrol",
-                    groupValue: selectedRadioListTile,
-                    onChanged: (value) {
-                      setState(() {
-                        setSelectedRadioTile(value!);
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    activeColor: Colors.lightGreen,
-                    title: Text(
-                      "Diesel",
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    value: "Diesel",
-                    groupValue: selectedRadioListTile,
-                    onChanged: (value) {
-                      setState(() {
-                        setSelectedRadioTile(value!);
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 18.0),
-                      child: Text(
-                        'Nature of complaint',
-                        style: TextStyle(
-                            fontSize: 25,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0, vertical: 12.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black38, width: 1.5),
-                        borderRadius: BorderRadius.circular(
-                            8.0),
-                      ),
-                      child: GestureDetector(
-                        onTap: () => showDropdownMenu(),
-                        child: Row(
-                          children: [
-                            Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 18.0, top: 30),
                               child: Text(
-                                selectedComplaint?.name ?? 'Select Complaint',
+                                'Machine Type',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                            Icon(Icons.arrow_drop_down),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 10),
+                          RadioListTile(
+                            activeColor: Colors.lightGreen,
+                            title: Text(
+                              "Petrol",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            value: "Petrol",
+                            groupValue: selectedRadioListTile,
+                            onChanged: (value) {
+                              setState(() {
+                                setSelectedRadioTile(value!);
+                              });
+                            },
+                          ),
+                          RadioListTile(
+                            activeColor: Colors.lightGreen,
+                            title: Text(
+                              "Diesel",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            value: "Diesel",
+                            groupValue: selectedRadioListTile,
+                            onChanged: (value) {
+                              setState(() {
+                                setSelectedRadioTile(value!);
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          const Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 18.0),
+                              child: Text(
+                                'Nature of complaint',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 15.0, right: 15.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 12.0),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.black38, width: 1.5),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: GestureDetector(
+                                onTap: () => showDropdownMenu(),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        selectedComplaint?.name ??
+                                            'Select Complaint',
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.all(16.0),
+                            child: TextField(
+                              controller: additionalRequirementController,
+                              maxLines: 5,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Additional Requirements (Optional)',
+                                alignLabelWithHint: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          isComplaintOpen
+                              ? ElevatedButton(
+                                  onPressed: null, // Button is disabled
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey.shade400,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 40.0, vertical: 16.0),
+                                    child: Text(
+                                      'Submit',
+                                      style: TextStyle(
+                                          fontSize: 18.0, color: Colors.white),
+                                    ),
+                                  ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    if (selectedComplaint
+                                        .toString()
+                                        .isNotEmpty) {
+                                      createServiceRequestAPI();
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please Select above Options")),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade700,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 40.0, vertical: 16.0),
+                                    child: Text(
+                                      'Submit',
+                                      style: TextStyle(
+                                          fontSize: 18.0, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                          const SizedBox(height: 30),
+                          Visibility(
+                            visible: isComplaintOpen,
+                            child: const Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 18.0),
+                                child: Text(
+                                  "Note :- You can not raise new complaint until your existing"
+                                  " complaint is closed or feedback is provided",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  isComplaintOpen
-                      ? ElevatedButton(
-                          onPressed: null, // Button is disabled
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade400,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40.0, vertical: 16.0),
-                            child: Text(
-                              'Submit',
-                              style: TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
-                            ),
-                          ),
-                        )
-                      : ElevatedButton(
-                          onPressed: () {
-                            if (selectedComplaint.toString().isNotEmpty) {
-                              createServiceRequestAPI();
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text("Please Select above Options")),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40.0, vertical: 16.0),
-                            child: Text(
-                              'Submit',
-                              style: TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                  const SizedBox(height: 30),
-                  Visibility(
-                    visible: isComplaintOpen,
-                    child: const Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 18.0),
-                        child: Text(
-                          "Note :- You can not raise new complaint until your existing"
-                          " complaint is closed or feedback is provided",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -230,7 +257,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
 
   Future<void> getComplaintList() async {
     try {
-      if(mounted){
+      if (mounted) {
         setState(() {
           _isLoading = true;
         });
@@ -241,12 +268,11 @@ class _ServiceRequestState extends State<ServiceRequest> {
           responseGetComplaint.data != null) {
         List<dataComplainType> fetchedData =
             List<dataComplainType>.from(responseGetComplaint.data!);
-        if(mounted){
+        if (mounted) {
           setState(() {
             complaintDatas = fetchedData;
           });
         }
-
       }
     } catch (e) {
       if (kDebugMode) {
@@ -254,12 +280,11 @@ class _ServiceRequestState extends State<ServiceRequest> {
       }
     } finally {
       await Future.delayed(Duration(seconds: 2));
-      if(mounted){
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
-
     }
   }
 
@@ -273,6 +298,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
     requestCreateServices.version = VersionApp;
+    requestCreateServices.addintionalReq = additionalRequirementController.text;
+
     try {
       setState(() {
         _isLoading = true;
@@ -309,7 +336,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
           title: 'Service Request',
           desc: responseCreateService.message,
           buttons: [
-            if (responseCreateService.message != 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            if (responseCreateService.message !=
+                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
               DialogButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the alert
@@ -320,7 +348,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ), // Button color
               ),
-            if (responseCreateService.message == 'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            if (responseCreateService.message ==
+                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
               DialogButton(
                 onPressed: () {
                   _launchPlayStore();
@@ -346,7 +375,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
       });
     }
   }
-
 
   Future<void> _fetchComplaints() async {
     setState(() {
@@ -385,10 +413,10 @@ class _ServiceRequestState extends State<ServiceRequest> {
   }
 
   void showDropdownMenu() {
-    try{
+    try {
       final RenderBox button = context.findRenderObject() as RenderBox;
       final RenderBox overlay =
-      Overlay.of(context).context.findRenderObject() as RenderBox;
+          Overlay.of(context).context.findRenderObject() as RenderBox;
       final RelativeRect position = RelativeRect.fromRect(
         Rect.fromPoints(
           button.localToGlobal(Offset.zero, ancestor: overlay),
@@ -399,7 +427,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
       );
 
       final List<PopupMenuEntry<dataComplainType>> items =
-      complaintDatas.map((dataComplainType complaint) {
+          complaintDatas.map((dataComplainType complaint) {
         return PopupMenuItem<dataComplainType>(
           value: complaint,
           child: Text(complaint.name!),
@@ -421,17 +449,16 @@ class _ServiceRequestState extends State<ServiceRequest> {
           });
         }
       });
-    }catch(e){
+    } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
     }
   }
 
-
-
   void _launchPlayStore() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+    const url =
+        'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));

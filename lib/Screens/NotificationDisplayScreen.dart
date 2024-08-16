@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:ni_service/Screens/MediaDisplayScreen.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 
 import '../http_service/services.dart';
 import '../model/ResponseNotificationList.dart';
@@ -32,14 +33,10 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
       context,
       MaterialPageRoute(
         builder: (context) => Mediadisplayscreen(
-          base64Data: base64Data,
-          isVideo: isVideo,
-          title: 'Media'
-        ),
+            base64Data: base64Data, isVideo: isVideo, title: 'Media'),
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +59,23 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
         future: futureNotifications,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: Imageprogressindicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Failed to load notifications'));
+            return const Center(
+                child: Text(
+              'Failed to load notifications',
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ));
           } else if (!snapshot.hasData || snapshot.data!.data!.isEmpty) {
-            return const Center(child: Text('No notifications available'));
+            return const Center(
+                child: Text(
+              'No notifications available',
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.data!.length,
@@ -110,8 +119,6 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 10,
                               ),
-
-
                             ),
                           ],
                         ),
@@ -135,7 +142,9 @@ class _NotificationdisplayscreenState extends State<Notificationdisplayscreen> {
                           child: GestureDetector(
                             onTap: () => _onArrowIconPressed(
                               notification.file!,
-                              notification.extension?.toLowerCase() == 'mp4' ? true : false,
+                              notification.extension?.toLowerCase() == 'mp4'
+                                  ? true
+                                  : false,
                             ),
                             child: const Icon(
                               Icons.arrow_forward,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/model/RequestGetCustomerCalibrationList.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../http_service/services.dart';
 import '../model/ResponseGetCustomerCalibrationList.dart';
@@ -39,7 +40,7 @@ class _CalibrationListScreenState extends State<CalibrationListScreen> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(),
+                child: Imageprogressindicator(),
               );
             } else if (snapshot.hasError) {
               return Center(
