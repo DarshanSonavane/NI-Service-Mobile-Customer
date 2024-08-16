@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/responseGetServiceRequestList.dart';
 
-import 'http_service/services.dart';
+import '../http_service/services.dart';
 
 class FeedbackDialog extends StatefulWidget {
   final DataComplaintsList complaint;

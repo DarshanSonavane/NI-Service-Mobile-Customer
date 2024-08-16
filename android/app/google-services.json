@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "945406651769",
+    "project_id": "ni-service-9755f",
+    "storage_bucket": "ni-service-9755f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945406651769:android:e28877b1e51315cfbb93a8",
+        "android_client_info": {
+          "package_name": "com.request.ni_service"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgijeqLDgtcoR1g13-W6OUoHOVGkFVXEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

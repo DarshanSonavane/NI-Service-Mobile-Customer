@@ -1,11 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ni_service/customDialogForMobileGSTAndEmail.dart';
+import 'package:ni_service/Utils/Constants.dart';
+import 'package:ni_service/Screens/customDialogForMobileGSTAndEmail.dart';
 import 'package:ni_service/model/ResponseDashboardDetails.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import 'http_service/services.dart';
+import '../http_service/services.dart';
 
 class Home extends StatefulWidget {
   final String title;
@@ -35,10 +39,8 @@ class _HomeState extends State<Home> {
   final sharedPreferences = SharedPreferencesManager.instance;
   bool emailMobileAvailable = false;
 
-
   @override
   void initState() {
-
     if (widget.email != null &&
         widget.email!.isNotEmpty &&
         widget.mobile != null &&
@@ -53,16 +55,11 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Container(
         color: Colors.grey.shade300,
         child: Center(
@@ -199,9 +196,9 @@ class _HomeState extends State<Home> {
     setState(() {
       _isLoading = true;
     });
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     ResponseDashboardDetails responseDashboardDetails =
-        await complaintsCounts(customerId!);
+        await complaintsCounts(customerId!, VersionApp);
     BuildContext currentContext = context;
     if (responseDashboardDetails.code == "200") {
       if (emailMobileAvailable) {
@@ -228,8 +225,38 @@ class _HomeState extends State<Home> {
         closedComplaints = responseDashboardDetails.closeComplaints!;
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseDashboardDetails.message!)));
+      Alert(
+        context: context,
+        title: 'Service Request',
+        desc: responseDashboardDetails.message,
+        buttons: [
+          if (responseDashboardDetails.message !=
+              'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            DialogButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the alert
+              },
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
+            ),
+          if (responseDashboardDetails.message ==
+              'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+            DialogButton(
+              onPressed: () {
+                _launchPlayStore();
+                Navigator.of(context).pop(); // Close the alert
+              },
+              color: Colors.blue,
+              child: const Text(
+                'Update',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
+            ),
+        ],
+      ).show();
     }
     setState(() {
       _isLoading = false; // Data is fetched, set loading to false
@@ -274,5 +301,14 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _launchPlayStore() async {
+    const url =
+        'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
 
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 }

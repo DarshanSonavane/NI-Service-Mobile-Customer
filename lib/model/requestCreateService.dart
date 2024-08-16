@@ -4,13 +4,16 @@ class requestCreateService {
   String? complaintType;
   String? status;
   String? version;
+  String? addintionalReq;
 
-  requestCreateService(
-      {this.customerId,
-      this.machineType,
-      this.complaintType,
-      this.status,
-      this.version});
+  requestCreateService({
+    this.customerId,
+    this.machineType,
+    this.complaintType,
+    this.status,
+    this.version,
+    this.addintionalReq,
+  });
 
   requestCreateService.fromJson(Map<String, dynamic> json) {
     customerId = json['customerId'];
@@ -18,15 +21,17 @@ class requestCreateService {
     complaintType = json['complaintType'];
     status = json['status'];
     version = json['version'];
+    addintionalReq = json['additionalReq'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
-    data['machineType'] = this.machineType;
-    data['complaintType'] = this.complaintType;
-    data['status'] = this.status;
-    data['version'] = this.version;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
+    data['machineType'] = machineType;
+    data['complaintType'] = complaintType;
+    data['status'] = status;
+    data['version'] = version;
+    data['additionalReq'] = addintionalReq;
     return data;
   }
 }

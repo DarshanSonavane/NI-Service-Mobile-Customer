@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:ni_service/Screens/trackComplaint.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 import 'package:intl/intl.dart';
+import 'package:ni_service/widgets/imageprogressindicator.dart';
+import '../Utils/Constants.dart';
 import 'feedbackDialog.dart';
-import 'http_service/services.dart';
-import 'model/responseGetServiceRequestList.dart';
+import '../http_service/services.dart';
+import '../model/dataComplaintTrack.dart';
+import '../model/responseGetServiceRequestList.dart';
 
 class ComplainRequestList extends StatefulWidget {
   final String title;
@@ -36,7 +40,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
     setState(() {
       _isLoading = true;
     });
-    String? customerId = sharedPreferences?.getString("CustomerId");
+    String? customerId = sharedPreferences?.getString(CUSTOMERID);
     final responseGetServiceRequestList = await fetchComplaints(customerId!);
     if (responseGetServiceRequestList.code == "200" &&
         responseGetServiceRequestList.data != null) {
@@ -55,10 +59,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
-      progressIndicator: const CircularProgressIndicator(
-        valueColor:
-            AlwaysStoppedAnimation<Color>(Colors.red), // Change color here
-      ),
+      progressIndicator: const Imageprogressindicator(),
       child: Scaffold(
         body: Container(
           color: Colors.grey.shade300,
@@ -90,8 +91,8 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
                             buildRow("Date of Complaint",
                                 getDate(complaint.createdAt!)),
                             const SizedBox(height: 10),
-                            buildRowStatus("Status",
-                                (complaint.status! == "1") ? "Open" : "Closed"),
+                            buildRowStatus(
+                                "Status", getStatusDisplay(complaint.status!)),
                             const SizedBox(height: 10),
                             buildRow("Complaint Type",
                                 complaint.complaintType!.name!),
@@ -102,38 +103,72 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
                                     ? "Diesel"
                                     : "Petrol"),
                             const SizedBox(height: 10),
-                            Visibility(
-                              visible: checkButtonVisibility(complaint),
-                              child: Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return FeedbackDialog(
-                                            complaint, _isLoading,
-                                            callback: ratingsCallback);
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 4.0),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        openTrackComplaint(
+                                            context, complaint.sId!);
                                       },
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade700,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12.0),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green.shade700,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ),
+                                      ),
+                                      child: const Text('Track',
+                                          style: TextStyle(
+                                              fontSize: 18.0,
+                                              color: Colors.white)),
                                     ),
                                   ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5.0, vertical: 5.0),
-                                    // Adjust padding
-                                    child: Text('Feedback',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                            fontSize:
-                                                18.0)), // Adjust font size
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 4.0),
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          checkButtonVisibility(complaint)
+                                              ? () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return FeedbackDialog(
+                                                          complaint, _isLoading,
+                                                          callback:
+                                                              ratingsCallback);
+                                                    },
+                                                  );
+                                                }
+                                              : null,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue.shade700,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 5.0, vertical: 5.0),
+                                        // Adjust padding
+                                        child: Text('Feedback',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    18.0)), // Adjust font size
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -152,7 +187,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("$label : ",
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             )),
         Expanded(
@@ -171,7 +206,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("$label : ",
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             )),
         Expanded(
@@ -204,6 +239,27 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
       return false;
     } else if (complaint.status! == "0" && complaint.ratings == null) {
       return true;
+    }
+    return false;
+  }
+
+  void openTrackComplaint(BuildContext context, String complaintId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TrackComplaint(complaintID: complaintId)));
+  }
+
+  String getStatusDisplay(String status) {
+    switch (status) {
+      case "1":
+        return "Open";
+      case "0":
+        return "Closed";
+      case "2":
+        return "In-Process";
+      default:
+        return "";
     }
   }
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ni_service/model/RequestCustomerDetailsModel.dart';
-import 'package:ni_service/model/ResponseCustomerDetailsModel.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
-import 'http_service/services.dart';
+import '../http_service/services.dart';
 import 'login_screen.dart';
 
 class CustomDialogForMobileGSTAndEmail extends StatefulWidget {

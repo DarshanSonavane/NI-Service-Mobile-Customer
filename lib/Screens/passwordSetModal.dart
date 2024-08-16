@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ni_service/model/RequestSetPassword.dart';
 
-import 'http_service/services.dart';
-import 'model/ResponseSetPassword.dart';
+import '../http_service/services.dart';
+import '../model/ResponseSetPassword.dart';
 
 class passwordSetModal extends StatefulWidget {
   const passwordSetModal({super.key});
@@ -220,7 +220,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
   }
 
   bool validatePassword(String password) {
-    // Password regex pattern
+    // Password regex patter
     final passwordRegex = RegExp(
       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
     );
