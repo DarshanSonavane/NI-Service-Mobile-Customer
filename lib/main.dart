@@ -4,7 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/NotificationDisplayScreen.dart';
 import 'package:ni_service/firebase_options.dart';
-import 'package:ni_service/http_service/firebase_api.dart';
 import 'package:ni_service/Screens/splash.dart';
 import 'package:ni_service/widgets/SharedPreferencesManager.dart';
 
@@ -28,7 +27,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: APPTITLE,
       routes: {
-        Notificationdisplayscreen.routeName: (context) => const Notificationdisplayscreen(title: "Notification"),
+        Notificationdisplayscreen.routeName: (context) =>
+            const Notificationdisplayscreen(title: "Notification"),
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
