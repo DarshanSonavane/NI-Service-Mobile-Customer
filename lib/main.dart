@@ -1,11 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logger/web.dart';
 import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/NotificationDisplayScreen.dart';
 import 'package:ni_service/firebase_options.dart';
 import 'package:ni_service/Screens/splash.dart';
-import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/shared_preference_manager.dart';
+
+final logger = Logger(
+  printer: PrettyPrinter(),
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      title: APPTITLE,
+      title: apptitle,
       routes: {
         Notificationdisplayscreen.routeName: (context) =>
             const Notificationdisplayscreen(title: "Notification"),

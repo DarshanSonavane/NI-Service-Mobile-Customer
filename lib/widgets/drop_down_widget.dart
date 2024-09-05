@@ -1,13 +1,16 @@
-
 import 'package:flutter/material.dart';
 
 class DropDownWidget extends StatefulWidget {
   final Function(String)
-  onValueChanged; // Callback function to pass the selected value
+      onValueChanged; // Callback function to pass the selected value
   List<String> listValue = [];
   String hintText;
 
-  DropDownWidget({Key? key, required this.onValueChanged, required this.listValue, required this.hintText})
+  DropDownWidget(
+      {Key? key,
+      required this.onValueChanged,
+      required this.listValue,
+      required this.hintText})
       : super(key: key);
 
   @override
@@ -32,12 +35,15 @@ class _DropDownWidgetState extends State<DropDownWidget> {
         border: Border.all(color: Colors.black38, width: 1.5),
         // Add a border to the container
         borderRadius:
-        BorderRadius.circular(8.0), // Optionally, add border radius
+            BorderRadius.circular(8.0), // Optionally, add border radius
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedOption,
-          hint: Text(widget.hintText,style: TextStyle(fontSize: 18.0)), // Displayed when no option is selected
+          hint: Text(
+            widget.hintText,
+            style: const TextStyle(fontSize: 18.0),
+          ),
           onChanged: (newValue) {
             setState(() {
               _selectedOption = newValue!;

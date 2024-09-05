@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -61,10 +61,11 @@ android {
         release {
             keyAlias 'niservice'
             keyPassword 'niservice123'
-            storeFile file('/Users/abhisheksharma/Documents/Flutter_Directory/ni_service/niservice')
+            storeFile file('/Users/abhisheksharma/Documents/Flutter Projects/NI_Service_Project/niservice')
             storePassword 'niservice123'
         }
     }
+
 
     buildTypes {
         release {

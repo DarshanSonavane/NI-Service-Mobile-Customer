@@ -16,7 +16,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
   final TextEditingController customCodeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
   var _passwordVisible, _confirmPasswordVisible;
   bool _isLoading = false;
 
@@ -79,8 +79,8 @@ class _PasswordSetModalState extends State<passwordSetModal> {
             const SizedBox(height: 20),
             const Text(
               "Note:-Password to have at least 8 characters, "
-                  "at least one uppercase letter, at least one lowercase letter,"
-                  " at least one digit, and at least one special character.",
+              "at least one uppercase letter, at least one lowercase letter,"
+              " at least one digit, and at least one special character.",
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 12,
@@ -98,7 +98,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
           },
           style: ButtonStyle(
               backgroundColor:
-              MaterialStateColor.resolveWith((states) => Colors.red)),
+                  WidgetStateColor.resolveWith((states) => Colors.red)),
           child: const Text(
             'Close',
             style: TextStyle(color: Colors.white),
@@ -107,7 +107,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor:
-            MaterialStateColor.resolveWith((states) => Colors.green),
+                WidgetStateColor.resolveWith((states) => Colors.green),
           ),
           onPressed: () async {
             String etCustomercode = customCodeController.text;
@@ -169,7 +169,7 @@ class _PasswordSetModalState extends State<passwordSetModal> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          contentPadding: EdgeInsets.all(16.0),
+          contentPadding: const EdgeInsets.all(16.0),
           border: InputBorder.none, // Remove the default border
         ),
         validator: validator,
@@ -198,21 +198,19 @@ class _PasswordSetModalState extends State<passwordSetModal> {
         controller: controller,
         decoration: InputDecoration(
             labelText: labelText,
-            contentPadding: EdgeInsets.all(16.0),
+            contentPadding: const EdgeInsets.all(16.0),
             border: InputBorder.none,
             suffixIcon: IconButton(
               icon: Icon(
                   _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Theme
-                      .of(context)
-                      .primaryColorDark),
+                  color: Theme.of(context).primaryColorDark),
               onPressed: () {
                 setState(() {
                   togglePasswordVisibility(!passwordVisibleTest);
                 });
               },
             ) // Remove the default border
-        ),
+            ),
         validator: validator,
         keyboardType: TextInputType.text,
       ),
@@ -258,15 +256,12 @@ class _PasswordSetModalState extends State<passwordSetModal> {
         ResponseSetPassword res = await setPasswordAPI(requestSetPassword);
         if (res.code == "200") {
           String message = res.message ?? "Password set successfully";
-          ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(content: Text(message)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(message)));
           Navigator.of(scaffoldContext).pop();
         }
-
       }
-
-
-      } catch (e) {
+    } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }

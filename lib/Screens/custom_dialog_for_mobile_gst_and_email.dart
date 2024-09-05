@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ni_service/model/RequestCustomerDetailsModel.dart';
-import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/shared_preference_manager.dart';
 
 import '../http_service/services.dart';
 import 'login_screen.dart';
 
 class CustomDialogForMobileGSTAndEmail extends StatefulWidget {
-  final String customer_id;
+  final String customerId;
   final Function(String) callback;
 
-  const CustomDialogForMobileGSTAndEmail(this.customer_id, {Key? key,required this.callback})
+  const CustomDialogForMobileGSTAndEmail(this.customerId,
+      {Key? key, required this.callback})
       : super(key: key);
 
   @override
@@ -29,10 +30,11 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:  [
+        children: [
           const Text('Enter Details'),
           IconButton(
-            icon: const Icon(Icons.logout,color: Colors.green), // You can change the icon as needed
+            icon: const Icon(Icons.logout,
+                color: Colors.green), // You can change the icon as needed
             onPressed: () {
               logoutButtonClick();
             },
@@ -54,7 +56,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
               return null;
             },
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildStyledTextField(
             controller: mobileController,
             labelText: 'Mobile Number*',
@@ -67,7 +69,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
               return null;
             },
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildStyledTextFieldGST(
             controller: gstController,
             labelText: 'GST Number (Optional)',
@@ -75,21 +77,22 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
         ],
       ),
       actions: <Widget>[
-
         ElevatedButton(
           onPressed: () async {
             // You can access the entered values using the controllers:
             String email = emailController.text;
             String mobile = mobileController.text;
             String gstNumber = gstController.text;
-            if (email.isNotEmpty &&  _validateEmail(email) &&
-                mobile.isNotEmpty && _validateMobile(mobile) &&
-                widget.customer_id.isNotEmpty) {
+            if (email.isNotEmpty &&
+                _validateEmail(email) &&
+                mobile.isNotEmpty &&
+                _validateMobile(mobile) &&
+                widget.customerId.isNotEmpty) {
               RequestCustomerDetails requestCustomer = RequestCustomerDetails();
               requestCustomer.mobile = mobile;
               requestCustomer.email = email;
               requestCustomer.gstNo = gstNumber;
-              requestCustomer.customerId = widget.customer_id;
+              requestCustomer.customerId = widget.customerId;
               final responseCustomerDetailsAPI =
                   await CustomerDetailsAPI(requestCustomer);
               if (responseCustomerDetailsAPI.code == "200") {
@@ -100,21 +103,20 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:
                         Text(responseCustomerDetailsAPI.message.toString())));
-
               }
             } else {
-              if(email.isNotEmpty &&
-                  mobile.isNotEmpty && widget.customer_id.isEmpty ){
+              if (email.isNotEmpty &&
+                  mobile.isNotEmpty &&
+                  widget.customerId.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("Something went wrong Please try again!!")));
-              }else{
+              } else {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("Please enter required Field")));
               }
-
             }
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     );
@@ -137,7 +139,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          contentPadding: EdgeInsets.all(16.0),
+          contentPadding: const EdgeInsets.all(16.0),
           border: InputBorder.none, // Remove the default border
         ),
         validator: validator,
@@ -166,7 +168,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          contentPadding: EdgeInsets.all(16.0),
+          contentPadding: const EdgeInsets.all(16.0),
           border: InputBorder.none, // Remove the default border
         ),
         validator: validator,
@@ -191,7 +193,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          contentPadding: EdgeInsets.all(16.0),
+          contentPadding: const EdgeInsets.all(16.0),
           border: InputBorder.none, // Remove the default border
         ),
       ),

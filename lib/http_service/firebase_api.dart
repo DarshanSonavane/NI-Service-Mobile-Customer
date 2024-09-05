@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:ni_service/model/FCMDetails/RequestFCMKeyDetails.dart';
 import '../Utils/Constants.dart';
 import '../Screens/NotificationDisplayScreen.dart';
 import '../main.dart';
-import '../widgets/SharedPreferencesManager.dart';
+import '../widgets/shared_preference_manager.dart';
 
 class FirebaseApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -47,10 +46,10 @@ class FirebaseApi {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       final fcmToken = await _firebaseMessaging.getToken();
-      print("FCMTOKEN $fcmToken");
       if (fcmToken != null) {
         RequestFCMKeyDetails requestFCMKeyDetails = RequestFCMKeyDetails();
-        requestFCMKeyDetails.customerId = sharedPreferences?.getString(CUSTOMERID);
+        requestFCMKeyDetails.customerId =
+            sharedPreferences?.getString(CUSTOMERID);
         requestFCMKeyDetails.deviceId = await getDeviceId();
         requestFCMKeyDetails.fcmKey = fcmToken;
         await sendTokenToServer(requestFCMKeyDetails);
@@ -71,7 +70,7 @@ class FirebaseApi {
 
     if (notification != null && android != null) {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
+          AndroidNotificationDetails(
         'your_channel_id',
         'your_channel_name',
         importance: Importance.max,
@@ -81,7 +80,7 @@ class FirebaseApi {
       );
 
       const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+          NotificationDetails(android: androidPlatformChannelSpecifics);
 
       await flutterLocalNotificationsPlugin.show(
         notification.hashCode,
@@ -93,13 +92,11 @@ class FirebaseApi {
     }
   }
 
-
-
   void _handleNotificationResponse(NotificationResponse response) {
     if (response.payload != null) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         Notificationdisplayscreen.routeName,
-            (Route<dynamic> route) => route.isFirst,
+        (Route<dynamic> route) => route.isFirst,
       );
     }
   }

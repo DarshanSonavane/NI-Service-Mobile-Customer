@@ -16,7 +16,8 @@ class TabbedCalibrationScreen extends StatelessWidget {
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Container(
-            color: Colors.grey.shade300, // Change the background color of the app bar
+            color: Colors
+                .grey.shade300, // Change the background color of the app bar
             child: SafeArea(
               child: Column(
                 children: <Widget>[
@@ -44,7 +45,6 @@ class TabbedCalibrationScreen extends StatelessWidget {
           children: [
             Calibration(title: 'Request Calibration'),
             CalibrationListScreen(title: 'Calibration List')
-
           ],
         ),
       ),

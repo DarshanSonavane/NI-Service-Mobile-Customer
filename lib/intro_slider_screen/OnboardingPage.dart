@@ -4,7 +4,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:ni_service/Screens/login_screen.dart';
 
 import '../Utils/Constants.dart';
-import '../widgets/SharedPreferencesManager.dart';
+import '../widgets/shared_preference_manager.dart';
 
 class OnBoardingPage extends StatefulWidget {
   final bool isLoggedIn;

@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:ni_service/model/FCMDetails/RequestFCMKeyDetails.dart';
 import 'package:ni_service/model/FCMDetails/ResponseFCMKeyDetails.dart';
 import 'package:ni_service/model/RequestCalibration.dart';
@@ -24,13 +22,13 @@ import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/model/responseCreateService.dart';
 import 'package:ni_service/model/responseGetServiceRequestList.dart';
-import 'package:ni_service/model/responseLogin.dart';
+import 'package:ni_service/model/response_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../model/responseGetComplaintType.dart';
 
-Future<responseLogin> loginAPI(requestLogin requestLogin) async {
+Future<ResponseLogin> loginAPI(requestLogin requestLogin) async {
   try {
     Map<String, String> headers = {
       'Content-type': 'application/json',
@@ -39,11 +37,8 @@ Future<responseLogin> loginAPI(requestLogin requestLogin) async {
     var res = await http.post(Uri.http("16.170.250.91:3000", "/login"),
         body: jsonEncode(requestLogin), headers: headers);
     final json = jsonDecode(res.body);
-    return responseLogin.fromJson(json);
+    return ResponseLogin.fromJson(json);
   } catch (e) {
-    if (kDebugMode) {
-      print("Hello $e");
-    }
     throw Exception(e);
   }
 }
@@ -98,13 +93,13 @@ Future<responseGetServiceRequestList> fetchComplaints(String customerId) async {
   }
 }
 
-//http://16.170.250.91:3000/get-dashboard-details
-Future<ResponseDashboardDetails> complaintsCounts(String customerId, String appVersion) async {
+Future<ResponseDashboardDetails> complaintsCounts(
+    String customerId, String appVersion) async {
   try {
     Map<String, String> headers = {
       'Content-type': 'application/json',
     };
-    final queryParameters = {'customerId': customerId, 'version' : appVersion};
+    final queryParameters = {'customerId': customerId, 'version': appVersion};
     var res = await http.get(
         Uri.http(
             "16.170.250.91:3000", "/get-dashboard-details", queryParameters),
@@ -258,7 +253,7 @@ Future<ResponseValidateCalibration> validateCalibrationRequest(
     Map<String, String> headers = {
       'Content-type': 'application/json',
     };
-
+    print(requestValidateCalibration);
     var res = await http.post(
         Uri.http("16.170.250.91:3000", "/validate-calibration"),
         body: jsonEncode(requestValidateCalibration),
