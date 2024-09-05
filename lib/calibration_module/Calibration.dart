@@ -9,7 +9,7 @@ import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../http_service/services.dart';
-import '../widgets/SharedPreferencesManager.dart';
+import '../widgets/shared_preference_manager.dart';
 
 class Calibration extends StatefulWidget {
   final String title;
@@ -145,7 +145,7 @@ class _CalibrationState extends State<Calibration> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey, width: 1.5),
                           borderRadius: BorderRadius.circular(8.0),
@@ -171,10 +171,10 @@ class _CalibrationState extends State<Calibration> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           isExpanded: true,
-                          icon:
-                              Icon(Icons.arrow_drop_down, color: Colors.black),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.black),
                           style: const TextStyle(color: Colors.black),
-                          underline: SizedBox(),
+                          underline: const SizedBox(),
                           // Remove the default underline
                           elevation: 8,
                           borderRadius: BorderRadius.circular(8),
@@ -186,7 +186,8 @@ class _CalibrationState extends State<Calibration> {
                   ElevatedButton(
                     onPressed: () {
                       if (getEmpData != null &&
-                          getEmpData.toString().isNotEmpty) {
+                          getEmpData.toString().isNotEmpty &&
+                          selectedRadioListTile!.isNotEmpty) {
                         createCalibrationAPI(getEmpData!.sId);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -223,7 +224,7 @@ class _CalibrationState extends State<Calibration> {
     try {
       final RenderBox button = context.findRenderObject() as RenderBox;
       final RenderBox overlay =
-          Overlay.of(context)!.context.findRenderObject() as RenderBox;
+          Overlay.of(context).context.findRenderObject() as RenderBox;
       final Offset position =
           button.localToGlobal(Offset.zero, ancestor: overlay);
 
@@ -307,10 +308,6 @@ class _CalibrationState extends State<Calibration> {
           desc: responseCreateCalibration.message,
           buttons: [
             DialogButton(
-              child: const Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
               onPressed: () {
                 setState(() {
                   getEmpData = null;
@@ -318,7 +315,11 @@ class _CalibrationState extends State<Calibration> {
                 });
                 Navigator.of(context).pop(); // Close the alert
               },
-              color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
+              color: const Color.fromRGBO(0, 179, 134, 1.0),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
             ),
           ],
         ).show();
@@ -360,10 +361,6 @@ class _CalibrationState extends State<Calibration> {
                 "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days",
             buttons: [
               DialogButton(
-                child: const Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
                 onPressed: () {
                   setState(() {
                     getEmpData = null;
@@ -371,7 +368,11 @@ class _CalibrationState extends State<Calibration> {
                   });
                   Navigator.of(context).pop();
                 },
-                color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
+                color: const Color.fromRGBO(0, 179, 134, 1.0),
+                child: const Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ), // Button color
               ),
             ],
           ).show();

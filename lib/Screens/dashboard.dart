@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:ni_service/Screens/customer_profile.dart';
 import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/NotificationDisplayScreen.dart';
-import 'package:ni_service/calibration_module/Calibration.dart';
 import 'package:ni_service/Screens/complain.dart';
 import 'package:ni_service/Screens/home.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/service_request.dart';
-import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/shared_preference_manager.dart';
 
 import '../calibration_module/TabbedCalibrationScreen.dart';
 import '../http_service/firebase_api.dart';
@@ -16,18 +16,18 @@ class Dashboard extends StatefulWidget {
   final String title;
   final String customerName;
   final String amcDue;
-  final String? email_id;
-  final String? mobile_num;
-  final String? customer_id;
+  final String? emailid;
+  final String? mobilenum;
+  final String? customerid;
 
   const Dashboard(
       {Key? key,
       required this.title,
       required this.customerName,
       required this.amcDue,
-      required this.email_id,
-      required this.mobile_num,
-      required this.customer_id})
+      required this.emailid,
+      required this.mobilenum,
+      required this.customerid})
       : super(key: key);
 
   @override
@@ -47,6 +47,7 @@ class _DashboardState extends State<Dashboard> {
     sendFCMNotificationDetails();
     _titles = [
       'Home',
+      'Profile',
       'My Complaints',
       'Service Request',
       'Calibration',
@@ -55,11 +56,17 @@ class _DashboardState extends State<Dashboard> {
     _screens = [
       Home(
         title: "Home",
-        cus_Name: widget.customerName,
-        email: widget.email_id,
-        mobile: widget.mobile_num,
-        customer_id: widget.customer_id,
+        cusName: widget.customerName,
+        email: widget.emailid,
+        mobile: widget.mobilenum,
+        customerId: widget.customerid,
+        onCalibrationRequested: () {
+          setState(() {
+            _currentIndex = 3; // Index for TabbedCalibrationScreen
+          });
+        },
       ),
+      const CustomerProfile(title: "Profile"),
       const ComplainRequestList(title: "My Complaints"),
       const ServiceRequest(title: "Raise Complaint"),
       const TabbedCalibrationScreen(title: "Calibration"),
@@ -82,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
           isAmcDueValid = amcDueDateTime!.isAfter(DateTime.now());
         });
       } catch (e) {
-        print('Error parsing amcDue: $e');
+        throw ('Error parsing amcDue: $e');
       }
     }
   }
@@ -119,9 +126,9 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.lightGreen,
         title: Text(
           _titles[_currentIndex],
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
-        leading: Builder(builder: (_context) {
+        leading: Builder(builder: (context) {
           return IconButton(
             icon: const Icon(
               Icons.menu_outlined,
@@ -129,7 +136,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             onPressed: () {
               if (isAmcDueValid) {
-                Scaffold.of(_context).openDrawer();
+                Scaffold.of(context).openDrawer();
               } else {
                 _showAmcDueAlertDialog();
               }
@@ -170,15 +177,38 @@ class _DashboardState extends State<Dashboard> {
                 padding: EdgeInsets.zero,
                 children: [
                   DrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Colors.lightGreen,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.lightGreen, Colors.green.shade200],
+                      ),
                     ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        'assets/images/nilogo.png',
+                    child: Center(
+                      child: Container(
                         width: 120,
                         height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 6,
+                              blurRadius: 10,
+                              offset: const Offset(0, 9),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Image.asset(
+                              'assets/images/niservice.gif',
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -195,6 +225,18 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   const Divider(),
                   ListTile(
+                    leading: const Icon(Icons.man),
+                    title: const Text(
+                      'Profile',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      _navigateToScreen(1);
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
                     leading: const Icon(Icons.feedback),
                     title: const Text(
                       'My Complaints',
@@ -202,7 +244,7 @@ class _DashboardState extends State<Dashboard> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
-                      _navigateToScreen(1);
+                      _navigateToScreen(2);
                     },
                   ),
                   const Divider(),
@@ -214,7 +256,7 @@ class _DashboardState extends State<Dashboard> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
-                      _navigateToScreen(2);
+                      _navigateToScreen(3);
                     },
                   ),
                   const Divider(),
@@ -226,7 +268,7 @@ class _DashboardState extends State<Dashboard> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
-                      _navigateToScreen(3);
+                      _navigateToScreen(4);
                     },
                   ),
                   const Divider(),
@@ -241,7 +283,7 @@ class _DashboardState extends State<Dashboard> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                _navigateToScreen(4);
+                _navigateToScreen(5);
               },
             ),
           ],

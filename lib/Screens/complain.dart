@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Screens/trackComplaint.dart';
-import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
 import '../Utils/Constants.dart';
-import 'feedbackDialog.dart';
+import 'feedback_dialog.dart';
 import '../http_service/services.dart';
-import '../model/dataComplaintTrack.dart';
 import '../model/responseGetServiceRequestList.dart';
 
 class ComplainRequestList extends StatefulWidget {
@@ -45,6 +44,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
     if (responseGetServiceRequestList.code == "200" &&
         responseGetServiceRequestList.data != null) {
       dataComplainList = responseGetServiceRequestList.data;
+      print("dataComplainList $dataComplainList");
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseGetServiceRequestList.message!)));
@@ -95,7 +95,7 @@ class _ComplainRequestListState extends State<ComplainRequestList> {
                                 "Status", getStatusDisplay(complaint.status!)),
                             const SizedBox(height: 10),
                             buildRow("Complaint Type",
-                                complaint.complaintType!.name!),
+                                complaint.complaintType?.name ?? 'N/A'),
                             const SizedBox(height: 10),
                             buildRow(
                                 "Machine Type",

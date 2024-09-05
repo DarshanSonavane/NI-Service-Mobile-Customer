@@ -5,7 +5,7 @@ import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../http_service/services.dart';
 import '../model/ResponseGetCustomerCalibrationList.dart';
-import '../widgets/SharedPreferencesManager.dart';
+import '../widgets/shared_preference_manager.dart';
 
 class CalibrationListScreen extends StatefulWidget {
   final String title;

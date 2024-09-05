@@ -3,7 +3,7 @@ import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/Screens/dashboard.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/login_screen.dart';
-import 'package:ni_service/widgets/SharedPreferencesManager.dart';
+import 'package:ni_service/widgets/shared_preference_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -43,9 +43,9 @@ class _SplashScreenState extends State<SplashScreen> {
       if (onboardingCompleted) {
         String? customerId = sharedPreferences?.getString(CUSTOMERID);
         String? cusName = sharedPreferences?.getString("CustomerName");
-        String? amc_Due = sharedPreferences?.getString("AMCDUE");
-        String? mobile_num = sharedPreferences?.getString("MOBILE");
-        String? email_id = sharedPreferences?.getString("EMAIL");
+        String? amcDue = sharedPreferences?.getString("AMCDUE");
+        String? mobilenum = sharedPreferences?.getString("MOBILE");
+        String? emailid = sharedPreferences?.getString("EMAIL");
         if (customerId != null && customerId.isNotEmpty) {
           Future.delayed(const Duration(seconds: 5), () {
             Navigator.pushReplacement(
@@ -54,10 +54,10 @@ class _SplashScreenState extends State<SplashScreen> {
                     builder: (context) => Dashboard(
                         title: "Home",
                         customerName: cusName!,
-                        amcDue: amc_Due!,
-                        email_id: email_id,
-                        mobile_num: mobile_num,
-                        customer_id: customerId)));
+                        amcDue: amcDue!,
+                        emailid: emailid,
+                        mobilenum: mobilenum,
+                        customerid: customerId)));
           });
         } else {
           Future.delayed(const Duration(seconds: 5), () {
