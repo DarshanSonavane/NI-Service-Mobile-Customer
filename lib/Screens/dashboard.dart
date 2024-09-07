@@ -62,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
         customerId: widget.customerid,
         onCalibrationRequested: () {
           setState(() {
-            _currentIndex = 3; // Index for TabbedCalibrationScreen
+            _currentIndex = 4; // Index for TabbedCalibrationScreen
           });
         },
       ),
