@@ -11,7 +11,7 @@ class CustomerProfile extends StatelessWidget {
     final sharedPreferences = SharedPreferencesManager.instance;
 
     // Fetch values from SharedPreferences with default values in case they are null
-    String customerId = sharedPreferences?.getString(CUSTOMERID) ?? "N/A";
+    String customerCode = sharedPreferences?.getString("CustomerCode") ?? "N/A";
     String cusName = sharedPreferences?.getString("CustomerName") ?? "N/A";
     String amcDue = sharedPreferences?.getString("AMCDUE") ?? "N/A";
     String mobilenum = sharedPreferences?.getString("MOBILE") ?? "N/A";
@@ -44,7 +44,7 @@ class CustomerProfile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildInfoRow(Icons.confirmation_number, 'Customer Code',
-                          customerId),
+                          customerCode),
                       _buildInfoRow(
                           Icons.location_city, 'Location', "$city, $state"),
                       _buildInfoRow(Icons.email, 'Email', emailid),

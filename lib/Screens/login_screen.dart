@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 150),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Image.asset(
@@ -256,6 +256,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 "CustomerId",
                 res.data![0].sId != null && res.data![0].sId!.isNotEmpty
                     ? res.data![0].sId!
+                    : "");
+            sharedPreferences?.setString(
+                "CustomerCode",
+                res.data![0].customerCode != null &&
+                        res.data![0].customerCode!.isNotEmpty
+                    ? res.data![0].customerCode!
                     : "");
             sharedPreferences?.setString(
                 "CustomerName",
