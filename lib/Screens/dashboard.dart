@@ -45,6 +45,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     sendFCMNotificationDetails();
+    checkAmcDueValidity();
     _titles = [
       'Home',
       'Profile',
@@ -61,9 +62,13 @@ class _DashboardState extends State<Dashboard> {
         mobile: widget.mobilenum,
         customerId: widget.customerid,
         onCalibrationRequested: () {
-          setState(() {
-            _currentIndex = 4; // Index for TabbedCalibrationScreen
-          });
+          if (isAmcDueValid) {
+            setState(() {
+              _currentIndex = 4; // Index for TabbedCalibrationScreen
+            });
+          } else {
+            _showAmcDueAlertDialog();
+          }
         },
       ),
       const CustomerProfile(title: "Profile"),
@@ -75,7 +80,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     ];
 
-    checkAmcDueValidity();
     super.initState();
   }
 

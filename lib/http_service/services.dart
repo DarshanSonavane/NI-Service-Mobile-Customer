@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:ni_service/model/FCMDetails/RequestFCMKeyDetails.dart';
 import 'package:ni_service/model/FCMDetails/ResponseFCMKeyDetails.dart';
 import 'package:ni_service/model/RequestCalibration.dart';
@@ -17,6 +18,8 @@ import 'package:ni_service/model/ResponseNotificationList.dart';
 import 'package:ni_service/model/ResponseSetPassword.dart';
 import 'package:ni_service/model/ResponseTrackComplaint.dart';
 import 'package:ni_service/model/ResponseValidateCalibration.dart';
+import 'package:ni_service/model/otp_details/request_otp.dart';
+import 'package:ni_service/model/otp_details/response_otp.dart';
 import 'package:ni_service/model/requestCreateService.dart';
 import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/requestLogin.dart';
@@ -24,6 +27,8 @@ import 'package:ni_service/model/responseCreateService.dart';
 import 'package:ni_service/model/responseGetServiceRequestList.dart';
 import 'package:ni_service/model/response_login.dart';
 import 'package:http/http.dart' as http;
+import 'package:ni_service/model/send_otp/request_send_otp.dart';
+import 'package:ni_service/model/send_otp/response_send_otp.dart';
 import 'dart:convert';
 
 import '../model/responseGetComplaintType.dart';
@@ -72,6 +77,38 @@ Future<responseCreateService> createServiceRequest(
         headers: headers);
     final json = jsonDecode(res.body);
     return responseCreateService.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseOTP> fetchOtp(RequestOtp requestOtp) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/send-verification-code"),
+        body: jsonEncode(requestOtp),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseOTP.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseSendOtp> sendOtpDetails(RequestSendOtp requestSendOtp) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(Uri.http("16.170.250.91:3000", "/verify-otp"),
+        body: jsonEncode(requestSendOtp), headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseSendOtp.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }

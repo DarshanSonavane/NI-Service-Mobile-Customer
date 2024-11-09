@@ -1,17 +1,20 @@
 class ResponseCalibrationService {
   String? message;
   Data? data;
+  String? code;
 
-  ResponseCalibrationService({this.message, this.data});
+  ResponseCalibrationService({this.message, this.data, this.code});
 
   ResponseCalibrationService.fromJson(Map<String, dynamic> json) {
     message = json['message'];
     data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    code = json['code'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['message'] = this.message;
+    data['code'] = this.code;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -31,13 +34,13 @@ class Data {
 
   Data(
       {this.customerId,
-        this.machineType,
-        this.employeeId,
-        this.status,
-        this.sId,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+      this.machineType,
+      this.employeeId,
+      this.status,
+      this.sId,
+      this.createdAt,
+      this.updatedAt,
+      this.iV});
 
   Data.fromJson(Map<String, dynamic> json) {
     customerId = json['customerId'];

@@ -6,7 +6,6 @@ import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Screens/password_set_modal.dart';
 import 'package:ni_service/Screens/dashboard.dart';
-import 'package:ni_service/main.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';

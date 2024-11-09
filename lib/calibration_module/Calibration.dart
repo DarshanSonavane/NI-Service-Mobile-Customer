@@ -6,9 +6,13 @@ import 'package:ni_service/model/RequestCalibration.dart';
 import 'package:ni_service/model/RequestValidateCalibration.dart';
 import 'package:ni_service/model/ResponseGetEmpList.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
+import 'package:otp_pin_field/otp_pin_field.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../http_service/services.dart';
+import '../model/otp_details/request_otp.dart';
+import '../model/send_otp/request_send_otp.dart';
 import '../widgets/shared_preference_manager.dart';
 
 class Calibration extends StatefulWidget {
@@ -28,6 +32,7 @@ class _CalibrationState extends State<Calibration> {
   bool _isLoading = false;
   final sharedPreferences = SharedPreferencesManager.instance;
   String? customerId = "";
+  final _otpPinFieldController = GlobalKey<OtpPinFieldState>();
 
   @override
   void initState() {
@@ -188,7 +193,7 @@ class _CalibrationState extends State<Calibration> {
                       if (getEmpData != null &&
                           getEmpData.toString().isNotEmpty &&
                           selectedRadioListTile!.isNotEmpty) {
-                        createCalibrationAPI(getEmpData!.sId);
+                        getOTP();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -294,6 +299,7 @@ class _CalibrationState extends State<Calibration> {
         : (selectedRadioListTile == 'Diesel' ? "1" : "2");
     requestCalibration.machineType = machineType;
     requestCalibration.employeeId = empId;
+    requestCalibration.versionName = versionApp;
 
     try {
       setState(() {
@@ -301,7 +307,8 @@ class _CalibrationState extends State<Calibration> {
       });
       final responseCreateCalibration =
           await createCalibrationRequest(requestCalibration);
-      if (responseCreateCalibration.data != null) {
+      if (responseCreateCalibration.code == "200" &&
+          responseCreateCalibration.data != null) {
         Alert(
           context: context,
           title: 'Calibration Request',
@@ -323,13 +330,46 @@ class _CalibrationState extends State<Calibration> {
             ),
           ],
         ).show();
+      } else {
+        Alert(
+          context: context,
+          title: 'Calibration',
+          desc: responseCreateCalibration.message,
+          buttons: [
+            if (responseCreateCalibration.message !=
+                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+              DialogButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: const Color.fromRGBO(0, 179, 134, 1.0),
+                child: const Text(
+                  'Done',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ), // Button color
+              ),
+            if (responseCreateCalibration.message ==
+                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
+              DialogButton(
+                onPressed: () {
+                  _launchPlayStore();
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                color: Colors.blue,
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ), // Button color
+              ),
+          ],
+        ).show();
       }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
     } finally {
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       setState(() {
         _isLoading = false;
       });
@@ -387,6 +427,126 @@ class _CalibrationState extends State<Calibration> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> getOTP() async {
+    String? customercode = sharedPreferences?.getString("CustomerCode");
+    RequestOtp requestOtp = RequestOtp();
+    requestOtp.customerCode = customercode;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final responseOtp = await fetchOtp(requestOtp);
+      if (responseOtp.code == "200") {
+        _showOtpDialog(customercode);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      await Future.delayed(const Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showOtpDialog(String? customercode) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter OTP"),
+        content: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "You have recieved your one time password on your registered email, please check your email.",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 25),
+              OtpPinField(
+                key: _otpPinFieldController,
+                autoFillEnable: true,
+                textInputAction: TextInputAction.done,
+                onSubmit: (text) {
+                  _sendOTP(text, customercode);
+                },
+                onChange: (text) {
+                  debugPrint('Enter on change pin is $text');
+                },
+                otpPinFieldStyle: const OtpPinFieldStyle(
+                  showHintText: true,
+                  activeFieldBorderGradient:
+                      LinearGradient(colors: [Colors.black, Colors.redAccent]),
+                  filledFieldBorderGradient:
+                      LinearGradient(colors: [Colors.green, Colors.tealAccent]),
+                  defaultFieldBorderGradient:
+                      LinearGradient(colors: [Colors.orange, Colors.brown]),
+                  fieldBorderWidth: 3,
+                ),
+                maxLength: 4,
+                showCursor: true,
+                cursorWidth: 1,
+                mainAxisAlignment: MainAxisAlignment.center,
+                otpPinFieldDecoration:
+                    OtpPinFieldDecoration.defaultPinBoxDecoration,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancel"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendOTP(String text, String? customercode) async {
+    RequestSendOtp requestSendOtp = RequestSendOtp();
+    requestSendOtp.customerCode = customercode;
+    requestSendOtp.otp = text;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final responseOtp = await sendOtpDetails(requestSendOtp);
+      if (responseOtp.code == '200') {
+        Navigator.of(context).pop();
+        createCalibrationAPI(getEmpData!.sId);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      await Future.delayed(const Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _launchPlayStore() async {
+    const url =
+        'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
     }
   }
 }

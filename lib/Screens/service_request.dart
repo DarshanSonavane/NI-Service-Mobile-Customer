@@ -2,9 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Utils/Constants.dart';
+import 'package:ni_service/model/otp_details/request_otp.dart';
 import 'package:ni_service/model/responseGetComplaintType.dart';
+import 'package:ni_service/model/send_otp/request_send_otp.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
+import 'package:otp_pin_field/otp_pin_field.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../http_service/services.dart';
 import '../model/requestCreateService.dart';
@@ -29,6 +32,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
   final sharedPreferences = SharedPreferencesManager.instance;
   List<DataComplaintsList>? dataComplainList;
   bool isComplaintOpen = false;
+  final _otpPinFieldController = GlobalKey<OtpPinFieldState>();
   final TextEditingController additionalRequirementController =
       TextEditingController();
 
@@ -198,7 +202,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
                                     if (selectedComplaint
                                         .toString()
                                         .isNotEmpty) {
-                                      createServiceRequestAPI();
+                                      getOTP();
                                     } else {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -279,12 +283,36 @@ class _ServiceRequestState extends State<ServiceRequest> {
         print(e.toString());
       }
     } finally {
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> getOTP() async {
+    String? customercode = sharedPreferences?.getString("CustomerCode");
+    RequestOtp requestOtp = RequestOtp();
+    requestOtp.customerCode = customercode;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final responseOtp = await fetchOtp(requestOtp);
+      if (responseOtp.code == "200") {
+        _showOtpDialog(customercode);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      await Future.delayed(const Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -314,10 +342,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
           desc: responseCreateService.message,
           buttons: [
             DialogButton(
-              child: const Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
               onPressed: () {
                 // Perform action on Done button press
                 _fetchComplaints();
@@ -326,7 +350,11 @@ class _ServiceRequestState extends State<ServiceRequest> {
                 });
                 Navigator.of(context).pop(); // Close the alert
               },
-              color: Color.fromRGBO(0, 179, 134, 1.0), // Button color
+              color: const Color.fromRGBO(0, 179, 134, 1.0),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ), // Button color
             ),
           ],
         ).show();
@@ -342,7 +370,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the alert
                 },
-                color: Color.fromRGBO(0, 179, 134, 1.0),
+                color: const Color.fromRGBO(0, 179, 134, 1.0),
                 child: const Text(
                   'Done',
                   style: TextStyle(color: Colors.white, fontSize: 20),
@@ -369,7 +397,7 @@ class _ServiceRequestState extends State<ServiceRequest> {
         print(e.toString());
       }
     } finally {
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       setState(() {
         _isLoading = false;
       });
@@ -464,6 +492,91 @@ class _ServiceRequestState extends State<ServiceRequest> {
       await launchUrl(Uri.parse(url));
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  void _showOtpDialog(String? customercode) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter OTP"),
+        content: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "You have recieved your one time password on your registered email, please check your email.",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 25),
+              OtpPinField(
+                key: _otpPinFieldController,
+                autoFillEnable: true,
+                textInputAction: TextInputAction.done,
+                onSubmit: (text) {
+                  _sendOTP(text, customercode);
+                },
+                onChange: (text) {
+                  debugPrint('Enter on change pin is $text');
+                },
+                otpPinFieldStyle: const OtpPinFieldStyle(
+                  showHintText: true,
+                  activeFieldBorderGradient:
+                      LinearGradient(colors: [Colors.black, Colors.redAccent]),
+                  filledFieldBorderGradient:
+                      LinearGradient(colors: [Colors.green, Colors.tealAccent]),
+                  defaultFieldBorderGradient:
+                      LinearGradient(colors: [Colors.orange, Colors.brown]),
+                  fieldBorderWidth: 3,
+                ),
+                maxLength: 4,
+                showCursor: true,
+                cursorWidth: 1,
+                mainAxisAlignment: MainAxisAlignment.center,
+                otpPinFieldDecoration:
+                    OtpPinFieldDecoration.defaultPinBoxDecoration,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancel"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendOTP(String text, String? customercode) async {
+    RequestSendOtp requestSendOtp = RequestSendOtp();
+    requestSendOtp.customerCode = customercode;
+    requestSendOtp.otp = text;
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final responseOtp = await sendOtpDetails(requestSendOtp);
+      if (responseOtp.code == '200') {
+        Navigator.of(context).pop();
+        createServiceRequestAPI();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      await Future.delayed(const Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

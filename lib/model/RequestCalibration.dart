@@ -2,6 +2,7 @@ class RequestCalibration {
   String? employeeId;
   String? machineType;
   String? customerId;
+  String? versionName;
 
   RequestCalibration({this.employeeId, this.machineType, this.customerId});
 
@@ -9,6 +10,8 @@ class RequestCalibration {
     employeeId = json['employeeId'];
     machineType = json['machineType'];
     customerId = json['customerId'];
+    customerId = json['customerId'];
+    versionName = json['version'];
   }
 
   Map<String, dynamic> toJson() {
@@ -16,6 +19,7 @@ class RequestCalibration {
     data['employeeId'] = this.employeeId;
     data['machineType'] = this.machineType;
     data['customerId'] = this.customerId;
+    data['version'] = this.versionName;
     return data;
   }
 }
