@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 
 class CustomerProfile extends StatelessWidget {

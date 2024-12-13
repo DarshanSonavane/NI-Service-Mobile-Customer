@@ -10,6 +10,8 @@ import 'package:otp_pin_field/otp_pin_field.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Screens/login_screen.dart';
+import '../Utils/clear_hive_data.dart';
 import '../http_service/services.dart';
 import '../model/otp_details/request_otp.dart';
 import '../model/send_otp/request_send_otp.dart';
@@ -273,6 +275,18 @@ class _CalibrationState extends State<Calibration> {
     }
   }
 
+  void _logoutUser() async {
+    //clearUserBox();
+    await clearExcept(ONBOARDINGCOMPLETED);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const LoginScreen(
+                  title: "Login",
+                  showDialogOnLoad: true,
+                )));
+  }
+
   Future<void> _fetchEmployeeData() async {
     setState(() {
       _isLoading = true;
@@ -309,60 +323,79 @@ class _CalibrationState extends State<Calibration> {
           await createCalibrationRequest(requestCalibration);
       if (responseCreateCalibration.code == "200" &&
           responseCreateCalibration.data != null) {
-        Alert(
+        showDialog(
           context: context,
-          title: 'Calibration Request',
-          desc: responseCreateCalibration.message,
-          buttons: [
-            DialogButton(
-              onPressed: () {
-                setState(() {
-                  getEmpData = null;
-                  selectedRadioListTile = "";
-                });
-                Navigator.of(context).pop(); // Close the alert
-              },
-              color: const Color.fromRGBO(0, 179, 134, 1.0),
-              child: const Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ), // Button color
-            ),
-          ],
-        ).show();
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Calibration Request'),
+              content: Text(responseCreateCalibration.message!),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      getEmpData = null;
+                      selectedRadioListTile = "";
+                    });
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(0, 179, 134, 1.0),
+                  ),
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+
+        // Alert(
+        //   context: context,
+        //   title: 'Calibration Request',
+        //   desc: responseCreateCalibration.message,
+        //   buttons: [
+        //     DialogButton(
+        //       onPressed: () {
+        //         setState(() {
+        //           getEmpData = null;
+        //           selectedRadioListTile = "";
+        //         });
+        //         Navigator.of(context).pop(); // Close the alert
+        //       },
+        //       color: const Color.fromRGBO(0, 179, 134, 1.0),
+        //       child: const Text(
+        //         'Done',
+        //         style: TextStyle(color: Colors.white, fontSize: 20),
+        //       ), // Button color
+        //     ),
+        //   ],
+        // ).show();
       } else {
-        Alert(
-          context: context,
-          title: 'Calibration',
-          desc: responseCreateCalibration.message,
-          buttons: [
-            if (responseCreateCalibration.message !=
-                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
-              DialogButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the alert
-                },
-                color: const Color.fromRGBO(0, 179, 134, 1.0),
-                child: const Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ), // Button color
-              ),
-            if (responseCreateCalibration.message ==
-                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
-              DialogButton(
-                onPressed: () {
-                  _launchPlayStore();
-                  Navigator.of(context).pop(); // Close the alert
-                },
-                color: Colors.blue,
-                child: const Text(
-                  'Update',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ), // Button color
-              ),
-          ],
-        ).show();
+        if (responseCreateCalibration.message ==
+            'Please update the app to keep using it. If you don\'t update, the app might stop working.') {
+          _logoutUser();
+        } else {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Calibration'),
+                content: Text(responseCreateCalibration.message!),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -394,28 +427,32 @@ class _CalibrationState extends State<Calibration> {
       if (responseValidateCalibration.code == "200" &&
           !responseValidateCalibration.isNewrecord!) {
         if (responseValidateCalibration.differenceDays!.toInt() < 10) {
-          Alert(
+          showDialog(
             context: context,
-            title: 'Calibration Request',
-            desc:
-                "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days",
-            buttons: [
-              DialogButton(
-                onPressed: () {
-                  setState(() {
-                    getEmpData = null;
-                    selectedRadioListTile = "";
-                  });
-                  Navigator.of(context).pop();
-                },
-                color: const Color.fromRGBO(0, 179, 134, 1.0),
-                child: const Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ), // Button color
-              ),
-            ],
-          ).show();
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return PopScope(
+                canPop: false,
+                child: AlertDialog(
+                  title: const Text('Calibration Request'),
+                  content: Text(
+                      "You can not raise a new calibration request for this machine type for next ${10 - responseValidateCalibration.differenceDays!.toInt()} days"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          getEmpData = null;
+                          selectedRadioListTile = "";
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Done'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         }
       }
     } catch (e) {
@@ -458,12 +495,21 @@ class _CalibrationState extends State<Calibration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Enter OTP"),
+        title: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Enter OTP",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         content: Container(
           width: MediaQuery.of(context).size.width * 0.8,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 "You have recieved your one time password on your registered email, please check your email.",
@@ -526,6 +572,11 @@ class _CalibrationState extends State<Calibration> {
       if (responseOtp.code == '200') {
         Navigator.of(context).pop();
         createCalibrationAPI(getEmpData!.sId);
+      } else {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseOtp.message!)),
+        );
       }
     } catch (e) {
       if (kDebugMode) {

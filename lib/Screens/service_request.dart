@@ -8,11 +8,13 @@ import 'package:ni_service/model/send_otp/request_send_otp.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+import '../Utils/clear_hive_data.dart';
 import '../http_service/services.dart';
 import '../model/requestCreateService.dart';
 import '../model/responseGetServiceRequestList.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'login_screen.dart';
 
 class ServiceRequest extends StatefulWidget {
   final String title;
@@ -292,6 +294,18 @@ class _ServiceRequestState extends State<ServiceRequest> {
     }
   }
 
+  void _logoutUser() async {
+    //clearUserBox();
+    await clearExcept(ONBOARDINGCOMPLETED);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const LoginScreen(
+                  title: "Login",
+                  showDialogOnLoad: true,
+                )));
+  }
+
   Future<void> getOTP() async {
     String? customercode = sharedPreferences?.getString("CustomerCode");
     RequestOtp requestOtp = RequestOtp();
@@ -336,61 +350,56 @@ class _ServiceRequestState extends State<ServiceRequest> {
           await createServiceRequest(requestCreateServices);
       if (responseCreateService.code == "200" &&
           responseCreateService.data != null) {
-        Alert(
+        showDialog(
           context: context,
-          title: 'Service Request',
-          desc: responseCreateService.message,
-          buttons: [
-            DialogButton(
-              onPressed: () {
-                // Perform action on Done button press
-                _fetchComplaints();
-                setState(() {
-                  selectedComplaint = null; // Reset dropdown to default value
-                });
-                Navigator.of(context).pop(); // Close the alert
-              },
-              color: const Color.fromRGBO(0, 179, 134, 1.0),
-              child: const Text(
-                'Done',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ), // Button color
-            ),
-          ],
-        ).show();
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Service Request'),
+              content: Text(responseCreateService.message!),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _fetchComplaints();
+                    setState(() {
+                      selectedComplaint = null;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(
+                        color: Color.fromRGBO(0, 179, 134, 1.0), fontSize: 20),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
       } else {
-        Alert(
-          context: context,
-          title: 'Service Request',
-          desc: responseCreateService.message,
-          buttons: [
-            if (responseCreateService.message !=
-                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
-              DialogButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the alert
-                },
-                color: const Color.fromRGBO(0, 179, 134, 1.0),
-                child: const Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ), // Button color
-              ),
-            if (responseCreateService.message ==
-                'Please update the app to keep using it. If you don\'t update, the app might stop working.')
-              DialogButton(
-                onPressed: () {
-                  _launchPlayStore();
-                  Navigator.of(context).pop(); // Close the alert
-                },
-                color: Colors.blue,
-                child: const Text(
-                  'Update',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ), // Button color
-              ),
-          ],
-        ).show();
+        if (responseCreateService.message ==
+            'Please update the app to keep using it. If you don\'t update, the app might stop working.') {
+          _logoutUser();
+        } else {
+          showDialog(
+            context: context,
+            barrierDismissible:
+                false, // Prevent dismissing the dialog by tapping outside
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Service Request'),
+                content: Text(responseCreateService.message!),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -567,6 +576,11 @@ class _ServiceRequestState extends State<ServiceRequest> {
       if (responseOtp.code == '200') {
         Navigator.of(context).pop();
         createServiceRequestAPI();
+      } else {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseOtp.message!)),
+        );
       }
     } catch (e) {
       if (kDebugMode) {

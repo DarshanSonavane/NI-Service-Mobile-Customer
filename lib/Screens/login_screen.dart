@@ -6,17 +6,22 @@ import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ni_service/Screens/password_set_modal.dart';
 import 'package:ni_service/Screens/dashboard.dart';
+import 'package:ni_service/Utils/Constants.dart';
 import 'package:ni_service/model/requestLogin.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../http_service/services.dart';
 import '../model/response_login.dart';
 
 class LoginScreen extends StatefulWidget {
   final String title;
+  final bool? showDialogOnLoad;
 
-  const LoginScreen({Key? key, required this.title}) : super(key: key);
+  const LoginScreen(
+      {Key? key, required this.title, this.showDialogOnLoad = false})
+      : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -35,12 +40,70 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    showDialogWhenAppNeedsUpdate();
     _loadUsernames().then((usernames) {
       setState(() {
         _usernames = usernames!;
         _filteredUsernames = usernames;
       });
     });
+  }
+
+  void showDialogWhenAppNeedsUpdate() {
+    if (widget.showDialogOnLoad == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return PopScope(
+              canPop: false,
+              child: AlertDialog(
+                title: const Text('Important!!!'),
+                content: const Text(
+                  "Please update the app to keep using it. If you don\'t update, the app might stop working.",
+                  style: TextStyle(fontSize: 18),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      launchPlayStore(); // Open Play Store
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 16.0),
+                      // Adjust padding
+                      child: Text('Update',
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white)), // Adjust font size
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      });
+    }
+  }
+
+  void launchPlayStore() async {
+    const url =
+        'https://play.google.com/store/apps/details?id=com.request.ni_service&pli=1'; // Replace with your app's Play Store link
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -67,169 +130,182 @@ class _LoginScreenState extends State<LoginScreen> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 150),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Image.asset(
-                    'assets/images/nilogo.png',
-                    width: 120,
-                    height: 150,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                      color: Colors.lightGreen,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28.5),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 18.0, horizontal: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey), // Add border
-                          borderRadius: BorderRadius.circular(12.0),
-                          // Optional: Adjust border radius
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 30.0, right: 20.0),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Version $versionApp',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 20,
                         ),
-                        child: SearchField(
-                            suggestionStyle: const TextStyle(fontSize: 25.0),
-                            searchInputDecoration: const InputDecoration(
-                              labelText: "Customer Code",
-                              border: InputBorder.none,
-                              labelStyle: TextStyle(fontSize: 20),
-                              prefixIcon: Icon(Icons.person),
-                            ),
-                            suggestions:
-                                convertToSearchFieldList(_filteredUsernames),
-                            hint: 'Enter your Customer code',
-                            itemHeight: 60,
-                            onSubmit: (value) {
-                              setState(() {
-                                customerCodeController.text = value;
-                              });
-                            },
-                            onSearchTextChanged: (value) {
-                              setState(() {
-                                customerCodeController.text = value;
-
-                                // Filter suggestions based on the search input
-                                _filteredUsernames = _usernames
-                                    .where((username) => username
-                                        .toLowerCase()
-                                        .startsWith(value.toLowerCase()))
-                                    .toList();
-                              });
-
-                              return null;
-                            },
-                            onSuggestionTap: (value) {
-                              setState(() {
-                                customerCodeController.text = value.searchKey;
-                              });
-                              FocusScope.of(context).unfocus();
-                            }),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 5.0, horizontal: 18.0),
-                  child: TextField(
-                    style: const TextStyle(fontSize: 20.0),
-                    controller: passwordController,
-                    obscureText: !passwordVisible,
-                    keyboardType: TextInputType.visiblePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(fontSize: 20),
-                      hintText: 'Enter your Password',
-                      prefixIcon: const Icon(Icons.password),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            passwordVisible =
-                                !passwordVisible; // Toggle password visibility
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 100),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Image.asset(
+                      'assets/images/nilogo.png',
+                      width: 120,
+                      height: 150,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                        color: Colors.lightGreen,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28.5),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18.0, horizontal: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.grey), // Add border
+                            borderRadius: BorderRadius.circular(12.0),
+                            // Optional: Adjust border radius
+                          ),
+                          child: SearchField(
+                              suggestionStyle: const TextStyle(fontSize: 25.0),
+                              searchInputDecoration: const InputDecoration(
+                                labelText: "Customer Code",
+                                border: InputBorder.none,
+                                labelStyle: TextStyle(fontSize: 20),
+                                prefixIcon: Icon(Icons.person),
+                              ),
+                              suggestions:
+                                  convertToSearchFieldList(_filteredUsernames),
+                              hint: 'Enter your Customer code',
+                              itemHeight: 60,
+                              onSubmit: (value) {
+                                setState(() {
+                                  customerCodeController.text = value;
+                                });
+                              },
+                              onSearchTextChanged: (value) {
+                                setState(() {
+                                  customerCodeController.text = value;
 
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return const passwordSetModal();
+                                  // Filter suggestions based on the search input
+                                  _filteredUsernames = _usernames
+                                      .where((username) => username
+                                          .toLowerCase()
+                                          .startsWith(value.toLowerCase()))
+                                      .toList();
+                                });
+
+                                return null;
+                              },
+                              onSuggestionTap: (value) {
+                                setState(() {
+                                  customerCodeController.text = value.searchKey;
+                                });
+                                FocusScope.of(context).unfocus();
+                              }),
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 18.0),
+                    child: TextField(
+                      style: const TextStyle(fontSize: 20.0),
+                      controller: passwordController,
+                      obscureText: !passwordVisible,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: const TextStyle(fontSize: 20),
+                        hintText: 'Enter your Password',
+                        prefixIcon: const Icon(Icons.password),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              passwordVisible =
+                                  !passwordVisible; // Toggle password visibility
+                            });
                           },
-                        );
-                      },
-                      child: const Text(
-                        'Set/Reset your Password',
-                        style: TextStyle(
-                            decoration: TextDecoration.underline, fontSize: 18),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.blue),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                    height: 16.0), // Add spacing below the text button
-                ElevatedButton(
-                  onPressed: () {
-                    _storedContext = context;
-                    onLoginClick();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return const passwordSetModal();
+                            },
+                          );
+                        },
+                        child: const Text(
+                          'Set/Reset your Password',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontSize: 18),
+                        ),
+                      ),
                     ),
                   ),
-                  child: const Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
-                    // Adjust padding
-                    child: Text('Login',
-                        style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.white)), // Adjust font size
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      _storedContext = context;
+                      onLoginClick();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 40.0, vertical: 16.0),
+                      // Adjust padding
+                      child: Text('Login',
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white)), // Adjust font size
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              ),
+            )),
       ),
     );
   }

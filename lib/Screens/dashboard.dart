@@ -8,6 +8,7 @@ import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/service_request.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 
+import '../Utils/clear_hive_data.dart';
 import '../calibration_module/TabbedCalibrationScreen.dart';
 import '../http_service/firebase_api.dart';
 import 'login_screen.dart';
@@ -70,6 +71,7 @@ class _DashboardState extends State<Dashboard> {
             _showAmcDueAlertDialog();
           }
         },
+        isAmcDueValid: isAmcDueValid,
       ),
       const CustomerProfile(title: "Profile"),
       const ComplainRequestList(title: "My Complaints"),
@@ -305,6 +307,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void logoutButtonClick() async {
+    //clearUserBox();
     await clearExcept(ONBOARDINGCOMPLETED);
     Navigator.pushReplacement(
         context,
