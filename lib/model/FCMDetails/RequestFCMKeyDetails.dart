@@ -12,10 +12,10 @@ class RequestFCMKeyDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
-    data['deviceId'] = this.deviceId;
-    data['fcmKey'] = this.fcmKey;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
+    data['deviceId'] = deviceId;
+    data['fcmKey'] = fcmKey;
     return data;
   }
 }

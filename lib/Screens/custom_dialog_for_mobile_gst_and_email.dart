@@ -94,7 +94,7 @@ class _CustomDialogState extends State<CustomDialogForMobileGSTAndEmail> {
               requestCustomer.gstNo = gstNumber;
               requestCustomer.customerId = widget.customerId;
               final responseCustomerDetailsAPI =
-                  await CustomerDetailsAPI(requestCustomer);
+                  await customerDetailsAPI(requestCustomer);
               if (responseCustomerDetailsAPI.code == "200") {
                 sharedPreferences?.setString("MOBILE", mobile);
                 sharedPreferences?.setString("EMAIL", email);

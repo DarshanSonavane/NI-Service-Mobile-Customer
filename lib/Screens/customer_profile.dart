@@ -9,7 +9,6 @@ class CustomerProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     final sharedPreferences = SharedPreferencesManager.instance;
 
-    // Fetch values from SharedPreferences with default values in case they are null
     String customerCode = sharedPreferences?.getString("CustomerCode") ?? "N/A";
     String cusName = sharedPreferences?.getString("CustomerName") ?? "N/A";
     String amcDue = sharedPreferences?.getString("AMCDUE") ?? "N/A";

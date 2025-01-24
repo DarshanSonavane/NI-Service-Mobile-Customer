@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> {
         });
       }
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 }

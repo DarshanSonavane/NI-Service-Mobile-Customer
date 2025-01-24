@@ -17,8 +17,12 @@ import 'package:ni_service/model/ResponseNotificationList.dart';
 import 'package:ni_service/model/ResponseSetPassword.dart';
 import 'package:ni_service/model/ResponseTrackComplaint.dart';
 import 'package:ni_service/model/ResponseValidateCalibration.dart';
+import 'package:ni_service/model/checkAmcDue/request_check_amc_due.dart';
+import 'package:ni_service/model/checkAmcDue/response_check_amc_due.dart';
 import 'package:ni_service/model/otp_details/request_otp.dart';
 import 'package:ni_service/model/otp_details/response_otp.dart';
+import 'package:ni_service/model/renew_amc/request_renew_amc.dart';
+import 'package:ni_service/model/renew_amc/response_renew_amc.dart';
 import 'package:ni_service/model/requestCreateService.dart';
 import 'package:ni_service/model/requestFeedback.dart';
 import 'package:ni_service/model/requestLogin.dart';
@@ -163,7 +167,25 @@ Future<ResponseFeedback> sendFeedbackRequest(
   }
 }
 
-Future<ResponseCustomerDetails> CustomerDetailsAPI(
+Future<ResponseRenewAMC> sendRenewAMCRequest(
+    RequestRenewAMC requestRenewAMC) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/raise-amc-request"),
+        body: jsonEncode(requestRenewAMC),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseRenewAMC.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseCustomerDetails> customerDetailsAPI(
     RequestCustomerDetails requestCustomerDetails) async {
   try {
     Map<String, String> headers = {
@@ -289,7 +311,6 @@ Future<ResponseValidateCalibration> validateCalibrationRequest(
     Map<String, String> headers = {
       'Content-type': 'application/json',
     };
-    print(requestValidateCalibration);
     var res = await http.post(
         Uri.http("16.170.250.91:3000", "/validate-calibration"),
         body: jsonEncode(requestValidateCalibration),
@@ -314,6 +335,24 @@ Future<ResponseFCMKeyDetails> sendTokenToServer(
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseFCMKeyDetails.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseCheckAmcDue> checkAmcDueDate(
+    RequestCheckAmcDue requestCheckAmcDue) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("16.170.250.91:3000", "/get-customer-details"),
+        body: jsonEncode(requestCheckAmcDue),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseCheckAmcDue.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }

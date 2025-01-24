@@ -18,9 +18,13 @@ import '../model/response_login.dart';
 class LoginScreen extends StatefulWidget {
   final String title;
   final bool? showDialogOnLoad;
+  final String? showDialogOnRenewAMC;
 
   const LoginScreen(
-      {Key? key, required this.title, this.showDialogOnLoad = false})
+      {Key? key,
+      required this.title,
+      this.showDialogOnLoad = false,
+      this.showDialogOnRenewAMC = ""})
       : super(key: key);
 
   @override
@@ -41,12 +45,58 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     showDialogWhenAppNeedsUpdate();
+    showDialogWhenRenewAMCClicked(widget.showDialogOnRenewAMC);
     _loadUsernames().then((usernames) {
       setState(() {
         _usernames = usernames!;
         _filteredUsernames = usernames;
       });
     });
+  }
+
+  void showDialogWhenRenewAMCClicked(String? showDialogOnRenewAMC) {
+    if (widget.showDialogOnRenewAMC?.isNotEmpty ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return PopScope(
+              canPop: false,
+              child: AlertDialog(
+                title: const Text('Important!!!'),
+                content: Text(
+                  showDialogOnRenewAMC!,
+                  style: const TextStyle(fontSize: 18),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 16.0),
+                      // Adjust padding
+                      child: Text('Done',
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white)), // Adjust font size
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      });
+    }
   }
 
   void showDialogWhenAppNeedsUpdate() {
@@ -61,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: AlertDialog(
                 title: const Text('Important!!!'),
                 content: const Text(
-                  "Please update the app to keep using it. If you don\'t update, the app might stop working.",
+                  "Please update the app to keep using it. If you don't update, the app might stop working.",
                   style: TextStyle(fontSize: 18),
                 ),
                 actions: [
@@ -181,12 +231,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Optional: Adjust border radius
                           ),
                           child: SearchField(
+                              controller: customerCodeController,
                               suggestionStyle: const TextStyle(fontSize: 25.0),
-                              searchInputDecoration: const InputDecoration(
+                              searchInputDecoration: SearchInputDecoration(
                                 labelText: "Customer Code",
                                 border: InputBorder.none,
-                                labelStyle: TextStyle(fontSize: 20),
-                                prefixIcon: Icon(Icons.person),
+                                labelStyle: const TextStyle(fontSize: 20),
+                                prefixIcon: const Icon(Icons.person),
                               ),
                               suggestions:
                                   convertToSearchFieldList(_filteredUsernames),
@@ -273,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          'Set/Reset your Password',
+                          'Set or Reset your Password',
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               fontSize: 18),
@@ -344,6 +395,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         res.data![0].customerName!.isNotEmpty
                     ? res.data![0].customerName!
                     : "");
+            debugPrint(":Amcdue , ${res.data![0].amcDue!}");
             sharedPreferences?.setString(
                 "AMCDUE",
                 res.data![0].amcDue != null && res.data![0].amcDue!.isNotEmpty

@@ -18,4 +18,4 @@ const String CALIBRATIONLIST =
 const String ONBOARDINGCOMPLETED = "onboardingCompleted";
 const String CUSTOMERID = "CustomerId";
 const apptitle = "NI Service";
-const String versionApp = '4.0.0+16';
+const String versionApp = '5.0.0+18';
