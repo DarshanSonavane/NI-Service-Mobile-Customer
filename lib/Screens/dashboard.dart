@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:ni_service/Screens/customer_profile.dart';
 import 'package:ni_service/Utils/Constants.dart';
@@ -8,7 +9,6 @@ import 'package:ni_service/Screens/home.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/service_request.dart';
 import 'package:ni_service/model/checkAmcDue/request_check_amc_due.dart';
-import 'package:ni_service/model/checkAmcDue/response_check_amc_due.dart';
 import 'package:ni_service/renew_amc_screen/amc_renew.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import '../calibration_module/TabbedCalibrationScreen.dart';
@@ -296,34 +296,39 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.lightGreen, Colors.green.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.lightGreen,
+          ),
+          child: ListView(
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.lightGreen, Colors.green.shade200],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-              ),
-              child: Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Image.asset('assets/images/niservice.gif'),
+                child: Center(
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Image.asset('assets/images/niservice.gif'),
+                    ),
                   ),
                 ),
               ),
-            ),
-            _buildDrawerItem(Icons.home, "Home", 0),
-            _buildDrawerItem(Icons.person, "Profile", 1),
-            _buildDrawerItem(Icons.feedback, "My Complaints", 2),
-            _buildDrawerItem(Icons.design_services, "Service Request", 3),
-            _buildDrawerItem(Icons.compass_calibration, "Calibration", 4),
-            _buildDrawerItem(Icons.help_outline, "Help", 5),
-          ],
+              _buildDrawerItem(Icons.home, "Home", 0),
+              _buildDrawerItem(Icons.person, "Profile", 1),
+              _buildDrawerItem(Icons.feedback, "My Complaints", 2),
+              _buildDrawerItem(Icons.design_services, "Service Request", 3),
+              _buildDrawerItem(Icons.compass_calibration, "Calibration", 4),
+              _buildDrawerItem(Icons.help_outline, "Help", 5),
+            ],
+          ),
         ),
       ),
       body: _screens[_currentIndex],

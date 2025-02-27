@@ -42,7 +42,7 @@ Future<ResponseLogin> loginAPI(requestLogin requestLogin) async {
       'Content-type': 'application/json',
     };
 
-    var res = await http.post(Uri.http("16.170.250.91:3000", "/login"),
+    var res = await http.post(Uri.http("13.49.111.133:3000", "/login"),
         body: jsonEncode(requestLogin), headers: headers);
     final json = jsonDecode(res.body);
     return ResponseLogin.fromJson(json);
@@ -58,7 +58,7 @@ Future<responseGetComplaintType> getComplaintListAPI() async {
     };
 
     var res = await http.get(
-        Uri.http("16.170.250.91:3000", "/complaint-type-list"),
+        Uri.http("13.49.111.133:3000", "/complaint-type-list"),
         headers: headers);
     final json = jsonDecode(res.body);
     return responseGetComplaintType.fromJson(json);
@@ -75,7 +75,7 @@ Future<responseCreateService> createServiceRequest(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/create-service-request"),
+        Uri.http("13.49.111.133:3000", "/create-service-request"),
         body: jsonEncode(requestCreateServices),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -92,7 +92,7 @@ Future<ResponseOTP> fetchOtp(RequestOtp requestOtp) async {
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/send-verification-code"),
+        Uri.http("13.49.111.133:3000", "/send-verification-code"),
         body: jsonEncode(requestOtp),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -108,7 +108,7 @@ Future<ResponseSendOtp> sendOtpDetails(RequestSendOtp requestSendOtp) async {
       'Content-type': 'application/json',
     };
 
-    var res = await http.post(Uri.http("16.170.250.91:3000", "/verify-otp"),
+    var res = await http.post(Uri.http("13.49.111.133:3000", "/verify-otp"),
         body: jsonEncode(requestSendOtp), headers: headers);
     final json = jsonDecode(res.body);
     return ResponseSendOtp.fromJson(json);
@@ -124,7 +124,7 @@ Future<responseGetServiceRequestList> fetchComplaints(String customerId) async {
     };
     final queryParameters = {'customerId': customerId};
     var res = await http.get(
-        Uri.http("16.170.250.91:3000", "/get-my-complaints", queryParameters),
+        Uri.http("13.49.111.133:3000", "/get-my-complaints", queryParameters),
         headers: headers);
     final json = jsonDecode(res.body);
     return responseGetServiceRequestList.fromJson(json);
@@ -142,7 +142,7 @@ Future<ResponseDashboardDetails> complaintsCounts(
     final queryParameters = {'customerId': customerId, 'version': appVersion};
     var res = await http.get(
         Uri.http(
-            "16.170.250.91:3000", "/get-dashboard-details", queryParameters),
+            "13.49.111.133:3000", "/get-dashboard-details", queryParameters),
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseDashboardDetails.fromJson(json);
@@ -158,7 +158,7 @@ Future<ResponseFeedback> sendFeedbackRequest(
       'Content-type': 'application/json',
     };
 
-    var res = await http.post(Uri.http("16.170.250.91:3000", "/save-feedback"),
+    var res = await http.post(Uri.http("13.49.111.133:3000", "/save-feedback"),
         body: jsonEncode(requestFeedback), headers: headers);
     final json = jsonDecode(res.body);
     return ResponseFeedback.fromJson(json);
@@ -175,7 +175,7 @@ Future<ResponseRenewAMC> sendRenewAMCRequest(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/raise-amc-request"),
+        Uri.http("13.49.111.133:3000", "/raise-amc-request"),
         body: jsonEncode(requestRenewAMC),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -193,7 +193,7 @@ Future<ResponseCustomerDetails> customerDetailsAPI(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/update-customer-details"),
+        Uri.http("13.49.111.133:3000", "/update-customer-details"),
         body: jsonEncode(requestCustomerDetails),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -211,7 +211,7 @@ Future<ResponseSetPassword> setPasswordAPI(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/update-customer-password"),
+        Uri.http("13.49.111.133:3000", "/update-customer-password"),
         body: jsonEncode(requestSetPassword),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -229,7 +229,7 @@ Future<ResponseTrackComplaint> fetchTrackComplaint(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/track-complaint"),
+        Uri.http("13.49.111.133:3000", "/track-complaint"),
         body: jsonEncode(requestTrackComplaint),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -245,7 +245,7 @@ Future<ResponseGetEmpList> fetchDataEmployeeCalibration() async {
       'Content-type': 'application/json',
     };
     var res = await http.get(
-        Uri.http("16.170.250.91:3000", "/calibration-employee-list"),
+        Uri.http("13.49.111.133:3000", "/calibration-employee-list"),
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseGetEmpList.fromJson(json);
@@ -260,7 +260,7 @@ Future<ResponseNotificationList> fetchNotifications() async {
       'Content-type': 'application/json',
     };
     var res = await http.get(
-        Uri.http("16.170.250.91:3000", "/fetch-notification"),
+        Uri.http("13.49.111.133:3000", "/fetch-notification"),
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseNotificationList.fromJson(json);
@@ -277,7 +277,7 @@ Future<ResponseCalibrationService> createCalibrationRequest(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/request-calibration"),
+        Uri.http("13.49.111.133:3000", "/request-calibration"),
         body: jsonEncode(requestCalibration),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -295,7 +295,7 @@ Future<ResponseGetCustomerCalibrationList> fetchCalibrationList(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/get-customer-calibration-list"),
+        Uri.http("13.49.111.133:3000", "/get-customer-calibration-list"),
         body: jsonEncode(requestGetCustomerCalibrationList),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -312,7 +312,7 @@ Future<ResponseValidateCalibration> validateCalibrationRequest(
       'Content-type': 'application/json',
     };
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/validate-calibration"),
+        Uri.http("13.49.111.133:3000", "/validate-calibration"),
         body: jsonEncode(requestValidateCalibration),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -330,7 +330,7 @@ Future<ResponseFCMKeyDetails> sendTokenToServer(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/insert-customer-fcm-details"),
+        Uri.http("13.49.111.133:3000", "/insert-customer-fcm-details"),
         body: jsonEncode(requestFcmKeyDetails),
         headers: headers);
     final json = jsonDecode(res.body);
@@ -348,7 +348,7 @@ Future<ResponseCheckAmcDue> checkAmcDueDate(
     };
 
     var res = await http.post(
-        Uri.http("16.170.250.91:3000", "/get-customer-details"),
+        Uri.http("13.49.111.133:3000", "/get-customer-details"),
         body: jsonEncode(requestCheckAmcDue),
         headers: headers);
     final json = jsonDecode(res.body);

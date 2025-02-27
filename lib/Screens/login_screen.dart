@@ -324,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          'Set or Reset your Password',
+                          'Set/Reset your Password',
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               fontSize: 18),
