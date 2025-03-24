@@ -8,7 +8,6 @@ import 'package:ni_service/model/send_otp/request_send_otp.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import 'package:ni_service/widgets/imageprogressindicator.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
-import '../Utils/clear_hive_data.dart';
 import '../http_service/services.dart';
 import '../model/requestCreateService.dart';
 import '../model/responseGetServiceRequestList.dart';
@@ -117,6 +116,23 @@ class _ServiceRequestState extends State<ServiceRequest> {
                                   fontWeight: FontWeight.bold),
                             ),
                             value: "Diesel",
+                            groupValue: selectedRadioListTile,
+                            onChanged: (value) {
+                              setState(() {
+                                setSelectedRadioTile(value!);
+                              });
+                            },
+                          ),
+                          RadioListTile(
+                            activeColor: Colors.lightGreen,
+                            title: Text(
+                              "Combo",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            value: "Combo",
                             groupValue: selectedRadioListTile,
                             onChanged: (value) {
                               setState(() {
@@ -334,8 +350,9 @@ class _ServiceRequestState extends State<ServiceRequest> {
     String? customerId = sharedPreferences?.getString(CUSTOMERID);
     String? complaintTypes = selectedComplaint!.sId!;
     requestCreateService requestCreateServices = requestCreateService();
-    requestCreateServices.machineType =
-        selectedRadioListTile == 'Petrol' ? "0" : "1";
+    requestCreateServices.machineType = selectedRadioListTile == 'Petrol'
+        ? "0"
+        : (selectedRadioListTile == 'Diesel' ? "1" : "2");
     requestCreateServices.complaintType = complaintTypes;
     requestCreateServices.customerId = customerId;
     requestCreateServices.status = "1";
