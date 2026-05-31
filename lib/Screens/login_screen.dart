@@ -21,11 +21,10 @@ class LoginScreen extends StatefulWidget {
   final String? showDialogOnRenewAMC;
 
   const LoginScreen(
-      {Key? key,
+      {super.key,
       required this.title,
       this.showDialogOnLoad = false,
-      this.showDialogOnRenewAMC = ""})
-      : super(key: key);
+      this.showDialogOnRenewAMC = ""});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -233,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: SearchField(
                               controller: customerCodeController,
                               suggestionStyle: const TextStyle(fontSize: 25.0),
-                              searchInputDecoration: SearchInputDecoration(
+                              searchInputDecoration: InputDecoration(
                                 labelText: "Customer Code",
                                 border: InputBorder.none,
                                 labelStyle: const TextStyle(fontSize: 20),
@@ -361,7 +360,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  onLoginClick() async {
+  Future<void> onLoginClick() async {
     try {
       setState(() {
         _isLoading = true;
@@ -417,6 +416,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 res.data![0].gstNo != null && res.data![0].gstNo!.isNotEmpty
                     ? res.data![0].gstNo!
                     : "");
+            sharedPreferences?.setString(
+                "PetrolPUCRegNumber",
+                res.data![0].petrolPUCRegNumber != null &&
+                        res.data![0].petrolPUCRegNumber!.isNotEmpty
+                    ? res.data![0].petrolPUCRegNumber!
+                    : "");
+            sharedPreferences?.setString(
+                "DieselPUCRegNumber",
+                res.data![0].dieselPUCRegNumber != null &&
+                        res.data![0].dieselPUCRegNumber!.isNotEmpty
+                    ? res.data![0].dieselPUCRegNumber!
+                    : "");
 
             sharedPreferences?.setString("MOBILE", mobile ?? "");
             sharedPreferences?.setString("EMAIL", email ?? "");
@@ -427,6 +438,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 res.data![0].amcDue != null ? res.data![0].amcDue! : "";
             String customerId =
                 res.data![0].sId != null ? res.data![0].sId! : "";
+            String dieselPUCRegNum = res.data![0].dieselPUCRegNumber != null
+                ? res.data![0].dieselPUCRegNumber!
+                : "";
+            String petrolPUCRegNum = res.data![0].petrolPUCRegNumber != null
+                ? res.data![0].petrolPUCRegNumber!
+                : "";
 
             // Convert machine details to JSON and store it in SharedPreferences
             if (res.machineDetails != null && res.machineDetails!.isNotEmpty) {
@@ -447,6 +464,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           emailid: email,
                           mobilenum: mobile,
                           customerid: customerId,
+                          dieselPUCRegNumber: dieselPUCRegNum,
+                          petrolPUCRegNumber: petrolPUCRegNum,
                         )));
           }
         } else {

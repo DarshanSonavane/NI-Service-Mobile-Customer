@@ -9,6 +9,7 @@ import 'package:ni_service/Screens/home.dart';
 import 'package:ni_service/intro_slider_screen/OnboardingPage.dart';
 import 'package:ni_service/Screens/service_request.dart';
 import 'package:ni_service/model/checkAmcDue/request_check_amc_due.dart';
+import 'package:ni_service/model/updatecenterdetails/request_update_center.dart';
 import 'package:ni_service/renew_amc_screen/amc_renew.dart';
 import 'package:ni_service/widgets/shared_preference_manager.dart';
 import '../calibration_module/TabbedCalibrationScreen.dart';
@@ -23,16 +24,19 @@ class Dashboard extends StatefulWidget {
   final String? emailid;
   final String? mobilenum;
   final String? customerid;
+  final String? petrolPUCRegNumber;
+  final String? dieselPUCRegNumber;
 
   const Dashboard(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.customerName,
       required this.amcDue,
       required this.emailid,
       required this.mobilenum,
-      required this.customerid})
-      : super(key: key);
+      required this.customerid,
+      required this.petrolPUCRegNumber,
+      required this.dieselPUCRegNumber});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -40,6 +44,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
+  String petrolPUCRegNumber = "";
+  String dieselPUCRegNumber = "";
   late List<String> _titles;
   late List<Widget> _screens;
   bool isAmcDueValid = false;
@@ -52,6 +58,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    petrolPUCRegNumber = widget.petrolPUCRegNumber ?? "";
+    dieselPUCRegNumber = widget.dieselPUCRegNumber ?? "";
+
     _initializeScreens();
   }
 
@@ -73,6 +82,7 @@ class _DashboardState extends State<Dashboard> {
       'My Complaints',
       'Service Request',
       'Calibration',
+      'Center Details',
       'Help'
     ];
 
@@ -130,6 +140,12 @@ class _DashboardState extends State<Dashboard> {
           setState(() {
             amcDueDateTime = parsedAmcDue;
             isAmcDueValid = amcDueDateTime!.isAfter(DateTime.now());
+
+            if (isAmcDueValid) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _checkAndShowPUCDialog();
+              });
+            }
             _screens[0] = Home(
               title: "Home",
               cusName: widget.customerName,
@@ -182,6 +198,18 @@ class _DashboardState extends State<Dashboard> {
   void _navigateToScreen(int index) {
     Navigator.pop(context); // Close the drawer
 
+    if (index == 5) {
+      _showPUCDialog();
+      return;
+    }
+
+    if (index == 6) {
+      setState(() {
+        _currentIndex = 5; // OnBoardingPage
+      });
+      return;
+    }
+
     if (index == 0) {
       // Navigate to a new instance of the Dashboard to trigger initState
       Navigator.pushReplacement(
@@ -194,6 +222,8 @@ class _DashboardState extends State<Dashboard> {
             emailid: widget.emailid,
             mobilenum: widget.mobilenum,
             customerid: widget.customerid,
+            petrolPUCRegNumber: widget.petrolPUCRegNumber,
+            dieselPUCRegNumber: widget.dieselPUCRegNumber,
           ),
         ),
       );
@@ -326,7 +356,8 @@ class _DashboardState extends State<Dashboard> {
               _buildDrawerItem(Icons.feedback, "My Complaints", 2),
               _buildDrawerItem(Icons.design_services, "Service Request", 3),
               _buildDrawerItem(Icons.compass_calibration, "Calibration", 4),
-              _buildDrawerItem(Icons.help_outline, "Help", 5),
+              _buildDrawerItem(Icons.app_registration, "Center Details", 5),
+              _buildDrawerItem(Icons.help_outline, "Help", 6),
             ],
           ),
         ),
@@ -341,6 +372,108 @@ class _DashboardState extends State<Dashboard> {
       title: Text(title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       onTap: () => _navigateToScreen(index),
+    );
+  }
+
+  void _checkAndShowPUCDialog() {
+    final petrolNumber = widget.petrolPUCRegNumber?.trim() ?? "";
+    final dieselNumber = widget.dieselPUCRegNumber?.trim() ?? "";
+
+    if (petrolNumber.isEmpty && dieselNumber.isEmpty) {
+      _showPUCDialog();
+    }
+  }
+
+  void _showPUCDialog() {
+    final petrolController = TextEditingController(
+      text: petrolPUCRegNumber,
+    );
+
+    final dieselController = TextEditingController(
+      text: dieselPUCRegNumber,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("PUC Details Required"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: petrolController,
+                decoration: const InputDecoration(
+                  labelText: "Petrol PUC Reg Number",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: dieselController,
+                decoration: const InputDecoration(
+                  labelText: "Diesel PUC Reg Number",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                final request = RequestUpdateCenterDetails(
+                  customerId: widget.customerid,
+                  petrolRegNumber: petrolController.text.trim(),
+                  dieselRegNumber: dieselController.text.trim(),
+                );
+
+                final response = await updateCenterDetails(request);
+
+                if (response.code == "200") {
+                  sharedPreferences?.setString(
+                    "PetrolPUCRegNumber",
+                    petrolController.text.trim(),
+                  );
+
+                  sharedPreferences?.setString(
+                    "DieselPUCRegNumber",
+                    dieselController.text.trim(),
+                  );
+
+                  setState(() {
+                    petrolPUCRegNumber = petrolController.text.trim();
+                    dieselPUCRegNumber = dieselController.text.trim();
+                  });
+                  if (context.mounted) {
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          response.message ??
+                              "Customer Center Details Updated Successfully",
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          response.message ?? "Failed to update center details",
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text("Submit"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

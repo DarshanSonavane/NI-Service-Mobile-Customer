@@ -32,6 +32,8 @@ import 'package:ni_service/model/response_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:ni_service/model/send_otp/request_send_otp.dart';
 import 'package:ni_service/model/send_otp/response_send_otp.dart';
+import 'package:ni_service/model/updatecenterdetails/request_update_center.dart';
+import 'package:ni_service/model/updatecenterdetails/response_update_center.dart';
 import 'dart:convert';
 
 import '../model/responseGetComplaintType.dart';
@@ -353,6 +355,24 @@ Future<ResponseCheckAmcDue> checkAmcDueDate(
         headers: headers);
     final json = jsonDecode(res.body);
     return ResponseCheckAmcDue.fromJson(json);
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+Future<ResponseUpdateCenterDetails> updateCenterDetails(
+    RequestUpdateCenterDetails requestUpdateCenterDetails) async {
+  try {
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+    };
+
+    var res = await http.post(
+        Uri.http("13.49.111.133:3000", "/update-center-details"),
+        body: jsonEncode(requestUpdateCenterDetails),
+        headers: headers);
+    final json = jsonDecode(res.body);
+    return ResponseUpdateCenterDetails.fromJson(json);
   } catch (e) {
     throw Exception(e);
   }

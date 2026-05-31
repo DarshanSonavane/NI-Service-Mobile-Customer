@@ -53,6 +53,8 @@ class Data {
   String? petrolMachineNumber;
   String? stateCode;
   String? machineModel;
+  String? dieselPUCRegNumber;
+  String? petrolPUCRegNumber;
 
   Data(
       {this.sId,
@@ -69,7 +71,9 @@ class Data {
       this.dieselMachineNumber,
       this.petrolMachineNumber,
       this.stateCode,
-      this.machineModel});
+      this.machineModel,
+      this.dieselPUCRegNumber,
+      this.petrolPUCRegNumber});
 
   Data.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -87,6 +91,8 @@ class Data {
     petrolMachineNumber = json['petrolMachineNumber'];
     stateCode = json['stateCode'];
     machineModel = json['machineModel'];
+    dieselPUCRegNumber = json['dieselPUCRegNumber'];
+    petrolPUCRegNumber = json['petrolPUCRegNumber'];
   }
 
   Map<String, dynamic> toJson() {
@@ -106,6 +112,8 @@ class Data {
     data['petrolMachineNumber'] = petrolMachineNumber;
     data['stateCode'] = stateCode;
     data['machineModel'] = machineModel;
+    data['dieselPUCRegNumber'] = dieselPUCRegNumber;
+    data['petrolPUCRegNumber'] = petrolPUCRegNumber;
     return data;
   }
 }

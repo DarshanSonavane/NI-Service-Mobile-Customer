@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  navigateToLoginScreen() async {
+  Future<void> navigateToLoginScreen() async {
     try {
       bool onboardingCompleted =
           sharedPreferences?.getBool(ONBOARDINGCOMPLETED) ?? false;
@@ -46,18 +46,25 @@ class _SplashScreenState extends State<SplashScreen> {
         String? amcDue = sharedPreferences?.getString("AMCDUE");
         String? mobilenum = sharedPreferences?.getString("MOBILE");
         String? emailid = sharedPreferences?.getString("EMAIL");
+        String? dieselPUCRegNum =
+            sharedPreferences?.getString("DieselPUCRegNumber");
+        String? petrolPUCRegNum =
+            sharedPreferences?.getString("PetrolPUCRegNumber");
         if (customerId != null && customerId.isNotEmpty) {
           Future.delayed(const Duration(seconds: 5), () {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (context) => Dashboard(
-                        title: "Home",
-                        customerName: cusName!,
-                        amcDue: amcDue!,
-                        emailid: emailid,
-                        mobilenum: mobilenum,
-                        customerid: customerId)));
+                          title: "Home",
+                          customerName: cusName!,
+                          amcDue: amcDue!,
+                          emailid: emailid,
+                          mobilenum: mobilenum,
+                          customerid: customerId,
+                          petrolPUCRegNumber: petrolPUCRegNum,
+                          dieselPUCRegNumber: dieselPUCRegNum,
+                        )));
           });
         } else {
           Future.delayed(const Duration(seconds: 5), () {

@@ -22,7 +22,7 @@ class Home extends StatefulWidget {
   final Function(int) onRenewAMCRequested;
 
   const Home({
-    Key? key,
+    super.key,
     required this.title,
     required this.cusName,
     required this.email,
@@ -31,7 +31,7 @@ class Home extends StatefulWidget {
     required this.amcDueString,
     required this.onCalibrationRequested,
     required this.onRenewAMCRequested,
-  }) : super(key: key);
+  });
 
   @override
   State<Home> createState() => _HomeState();
