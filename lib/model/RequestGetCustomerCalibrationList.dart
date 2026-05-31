@@ -8,8 +8,8 @@ class RequestGetCustomerCalibrationList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
     return data;
   }
 }

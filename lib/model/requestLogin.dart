@@ -3,7 +3,7 @@ class requestLogin {
   String? type;
   String? password;
 
-  requestLogin({this.id, this.type,this.password});
+  requestLogin({this.id, this.type, this.password});
 
   requestLogin.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -12,10 +12,10 @@ class requestLogin {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['type'] = this.type;
-    data['password'] = this.password;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['type'] = type;
+    data['password'] = password;
     return data;
   }
 }

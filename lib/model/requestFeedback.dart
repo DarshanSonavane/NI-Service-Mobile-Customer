@@ -15,11 +15,11 @@ class RequestFeedback {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
-    data['serviceRequestId'] = this.serviceRequestId;
-    data['feedback'] = this.feedback;
-    data['count'] = this.count;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
+    data['serviceRequestId'] = serviceRequestId;
+    data['feedback'] = feedback;
+    data['count'] = count;
     return data;
   }
 }

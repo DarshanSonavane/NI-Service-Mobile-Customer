@@ -33,12 +33,12 @@ class Data {
 
   Data(
       {this.customerId,
-        this.fcmKey,
-        this.deviceId,
-        this.sId,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+      this.fcmKey,
+      this.deviceId,
+      this.sId,
+      this.createdAt,
+      this.updatedAt,
+      this.iV});
 
   Data.fromJson(Map<String, dynamic> json) {
     customerId = json['customerId'];
@@ -51,14 +51,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
-    data['fcmKey'] = this.fcmKey;
-    data['deviceId'] = this.deviceId;
-    data['_id'] = this.sId;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
+    data['fcmKey'] = fcmKey;
+    data['deviceId'] = deviceId;
+    data['_id'] = sId;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['__v'] = iV;
     return data;
   }
 }

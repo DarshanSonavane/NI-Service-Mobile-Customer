@@ -15,11 +15,11 @@ class RequestCustomerDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['customerId'] = this.customerId;
-    data['mobile'] = this.mobile;
-    data['email'] = this.email;
-    data['gstNo'] = this.gstNo;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['customerId'] = customerId;
+    data['mobile'] = mobile;
+    data['email'] = email;
+    data['gstNo'] = gstNo;
     return data;
   }
 }
